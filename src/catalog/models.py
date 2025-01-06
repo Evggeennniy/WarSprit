@@ -19,11 +19,11 @@ class ProductOptionGroup(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = " Група опцій різновиду"
-        verbose_name_plural = "Опцiї різновидiв"
+        verbose_name = "Група опцій різновиду"
+        verbose_name_plural = "Групи опцiї різновидів"
 
 class Color(models.Model):
-    name = models.CharField(verbose_name="Назва групи", max_length=20, unique=True)
+    name = models.CharField(verbose_name="Назва кольору", max_length=20, unique=True)
     color = ColorField(verbose_name="Колір", default='#FF0000')
 
     def __str__(self):
@@ -82,7 +82,7 @@ class Product(models.Model):
         verbose_name="Опис", config_name="default", max_length=2048
     )
     options = models.ManyToManyField(ProductOption, related_name="products", blank=True)
-    related_category = models.ForeignKey(
+    category = models.ForeignKey(
         verbose_name="Категорiя",
         to=Category,
         on_delete=models.CASCADE,
