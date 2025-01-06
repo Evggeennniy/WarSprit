@@ -11,8 +11,8 @@ db.sqlite3
 media/
 
 # Міграції
-*/migrations/
-*/migrations/*.py
+migrations/
+migrations/*.py
 !*/migrations/__init__.py
 
 # Virtual environment

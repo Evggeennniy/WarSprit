@@ -4,3 +4,4 @@ pillow
 django-jazzmin
 django-ckeditor-5
 requests
+django-colorfield
