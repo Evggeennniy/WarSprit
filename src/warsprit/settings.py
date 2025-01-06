@@ -9,9 +9,12 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
+import os
 
+from dotenv import load_dotenv
 from pathlib import Path
 
+load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -31,12 +34,15 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    "jazzmin",
+    "django_ckeditor_5",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "catalog",
 ]
 
 MIDDLEWARE = [
@@ -121,3 +127,72 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+
+CKEDITOR_5_CONFIGS = {
+    "default": {
+        "toolbar": [
+            "heading",  # Добавляем заголовки (H1, H2 и т.д.)
+            "|",
+            "bold",  # Жирный текст
+            "italic",  # Курсив
+            "underline",  # Подчеркивание
+            "fontColor",  # Цвет текста
+            "fontBackgroundColor",  # Цвет фона текста
+        ],
+        "heading": {
+            "options": [
+                {
+                    "model": "paragraph",
+                    "title": "Paragraph",
+                    "class": "ck-heading_paragraph",
+                },
+                {
+                    "model": "heading1",
+                    "view": "h1",
+                    "title": "Heading 1",
+                    "class": "ck-heading_heading1",
+                },
+                {
+                    "model": "heading2",
+                    "view": "h2",
+                    "title": "Heading 2",
+                    "class": "ck-heading_heading2",
+                },
+                {
+                    "model": "heading3",
+                    "view": "h3",
+                    "title": "Heading 3",
+                    "class": "ck-heading_heading3",
+                },
+            ]
+        },
+        "fontColor": {
+            "colors": [
+                {"color": "hsl(0, 0%, 0%)", "label": "Black"},
+                {"color": "hsl(0, 75%, 60%)", "label": "Red"},
+                {"color": "hsl(30, 75%, 60%)", "label": "Orange"},
+                {"color": "hsl(60, 75%, 60%)", "label": "Yellow"},
+                {"color": "hsl(120, 75%, 60%)", "label": "Green"},
+                {"color": "hsl(180, 75%, 60%)", "label": "Turquoise"},
+                {"color": "hsl(240, 75%, 60%)", "label": "Blue"},
+                {"color": "hsl(300, 75%, 60%)", "label": "Purple"},
+            ]
+        },
+        "fontBackgroundColor": {
+            "colors": [
+                {"color": "hsl(0, 0%, 100%)", "label": "White"},
+                {"color": "hsl(0, 75%, 60%)", "label": "Red"},
+                {"color": "hsl(30, 75%, 60%)", "label": "Orange"},
+                {"color": "hsl(60, 75%, 60%)", "label": "Yellow"},
+                {"color": "hsl(120, 75%, 60%)", "label": "Green"},
+                {"color": "hsl(180, 75%, 60%)", "label": "Turquoise"},
+                {"color": "hsl(240, 75%, 60%)", "label": "Blue"},
+                {"color": "hsl(300, 75%, 60%)", "label": "Purple"},
+            ]
+        },
+        "language": "uk",
+    }
+}
