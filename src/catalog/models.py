@@ -30,19 +30,9 @@ class Color(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = "Колір"
-        verbose_name_plural = "Кольори"
+        verbose_name = "Колір Опцiй"
+        verbose_name_plural = "Коліри Опцiй"
 
-
-class Prefix(models.Model):
-    name = models.CharField(verbose_name="Префікс", max_length=10, unique=True)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name = "Префікс"
-        verbose_name_plural = "Префікси"
 
 class ProductOption(models.Model):
     group = models.ForeignKey(ProductOptionGroup, verbose_name="Група", on_delete=models.CASCADE, related_name="options"
@@ -50,11 +40,10 @@ class ProductOption(models.Model):
     color = models.ForeignKey(
         Color, verbose_name="Колір", on_delete=models.CASCADE, related_name="options",blank=True, null=True )
 
-    prefix = models.ForeignKey(
-        Prefix, on_delete=models.CASCADE, related_name="options", verbose_name="Префікс",blank=True, null=True
+    additional_price = models.IntegerField(verbose_name="Назва опцій", default=0)
+    value = CKEditor5Field(
+        verbose_name="Опис", config_name="default", max_length=100
     )
-    additional_price = models.IntegerField(verbose_name="Додаткова ціна опцій", default=0)
-    value = models.CharField(verbose_name="Назва опції", max_length=64)
 
     def get_group(self):
         return self.group.name
@@ -63,9 +52,6 @@ class ProductOption(models.Model):
         if self.color:
             return self.color.color  # type: ignore
 
-    def get_prefix(self):
-        if self.prefix:
-            return self.prefix.name # type: ignore
 
 
     def __str__(self) -> str:

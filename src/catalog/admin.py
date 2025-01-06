@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.forms import TextInput
 
-from .models import Category, ProductImage, ProductOption, Product, OrderProductPart, Order, Prefix, Color, \
+from .models import Category, ProductImage, ProductOption, Product, OrderProductPart, Order, Color, \
     ProductOptionGroup
 
 
@@ -18,10 +18,6 @@ class CategoriesAdmin(admin.ModelAdmin):
 class ProductImageInline(admin.TabularInline):
     model = ProductImage
     extra = 1
-
-@admin.register(Prefix)
-class PrefixAdmin(admin.ModelAdmin):
-    list_display = ("name",)
 
 @admin.register(Color)
 class ColorAdmin(admin.ModelAdmin):
