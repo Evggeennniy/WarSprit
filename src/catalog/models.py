@@ -30,8 +30,8 @@ class Color(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = "Колір Опцiй"
-        verbose_name_plural = "Коліри Опцiй"
+        verbose_name = "Колір опцiй"
+        verbose_name_plural = "Коліри опцiй"
 
 
 class ProductOption(models.Model):
@@ -40,9 +40,9 @@ class ProductOption(models.Model):
     color = models.ForeignKey(
         Color, verbose_name="Колір", on_delete=models.CASCADE, related_name="options",blank=True, null=True )
 
-    additional_price = models.IntegerField(verbose_name="Назва опцій", default=0)
+    additional_price = models.IntegerField(verbose_name="Додаткова вартість", default=0)
     value = CKEditor5Field(
-        verbose_name="Опис", config_name="default", max_length=100
+        verbose_name="Назва опцій", config_name="default", max_length=100
     )
 
     def get_group(self):
@@ -55,7 +55,7 @@ class ProductOption(models.Model):
 
 
     def __str__(self) -> str:
-        return "Варіант різновиду"
+        return  f"{self.group.name}-{self.value}-{self.additional_price}₴" if self.additional_price else f"{self.group.name}-{self.value}"
 
     class Meta:
         verbose_name = "Опцiя різновиду"
