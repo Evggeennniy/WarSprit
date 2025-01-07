@@ -1,11 +1,11 @@
-{% load static %} {% load i18n %}
-
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- Alpine Plugins -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}"/>
     <script
       defer
       src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js"
@@ -20,491 +20,37 @@
       src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
     ></script>
     <meta name="csrfmiddlewaretoken" content="{{ csrf_token }}" />
-    <link rel="stylesheet" href="{% static 'reset.css' %}" />
-    <link rel="stylesheet" href="{% static 'styles.css' %}" />
+    <title>War</title>
   </head>
   <body>
     <div class="page-wrap">
-      {% include 'navbar.html' %}
       <main class="main">
         <div class="overlay" id="overlay"></div>
-        {% include 'slider_menu.html' %} {% include 'authpopup.html' %}
         <div x-data="basketStore" class="container">
           <section class="main__fullcontent basket">
-            <div class="content-wrap">
-              <div class="basket">
-                <div class="basket__header gray-border">
-                  <p class="basket__header-title">
-                    {% trans "Оформлення замовлення" %}
-                  </p>
-                  <button
-                    class="basket__header-btn"
-                    id="btn-delete-checked"
-                    @click="removeItems"
-                  >
-                    <img
-                      src="{% static 'trash-icon.svg' %}"
-                      alt="basket-icon"
-                    />
-                    <p>{% trans "Видалити обране" %}</p>
-                  </button>
-                </div>
-                <div class="basket__items">
-                  <template x-for="(item, index) in items" :key="item.itemId">
-                    <div
-                      class="basket__item gray-border"
-                      :class="isActive(item.itemId) && 'chosen'"
-                    >
-                      <div
-                        class="basket__item-general"
-                        @click.stop="window.location.href = '/product/' + item.productId"
-                      >
-                        <img
-                          src="/static/checkmark-icon.svg"
-                          alt="checkmark"
-                          class="basket__item-checkmark \"
-                          @click.stop="toggleIndex(item.itemId)"
-                        />
-                        <img
-                          :src="item.productImg"
-                          alt="product-item"
-                          class="basket__item-img"
-                        />
-                        <div class="basket__item-info">
-                          <p class="basket__item-name">
-                            <span x-text="item.productName"></span>
-                            (<span x-text="item.volume"></span>) -
-                            <span x-text="item.optionName"></span>
-                          </p>
-                          <p class="basket__item-wraptype">
-                            <template x-if="item.wrapperName">
-                              <span>
-                                <span x-text="item.wrapperName"></span> /
-                                <span x-text="item.wrapperPrice + '₴'"></span>
-                              </span>
-                            </template>
-                            <template x-if="!item.wrapperName">
-                              <span>{% trans "Без пакування" %}</span>
-                            </template>
-                          </p>
-                          <div
-                            class="basket__item-quantity quantity_item quantity-panel-cover-mob"
-                          >
-                            <div>
-                              <img
-                                src="/static/plus-icon.svg"
-                                alt="plus"
-                                action="plus"
-                                class="plus basket__item-icon quantity-btn"
-                                @click.stop="editQuantity(index, 'plus', item.itemId)"
-                              />
-                              <h3
-                                class="quantity-value-basket"
-                                x-text="item.productQuantity"
-                              ></h3>
-                              <img
-                                src="/static/minus-icon.svg"
-                                alt="minus"
-                                action="minus"
-                                class="minus basket__item-icon quantity-btn"
-                                @click.stop="editQuantity(index, 'minus', item.itemId)"
-                              />
-                            </div>
-                          </div>
-                          <div class="gray-line"></div>
-                        </div>
-                      </div>
-                      <div class="price-wrap">
-                        <!-- Знижка -->
-                        <div class="basket__item-price">
-                          <div
-                            class="basket__item-discount"
-                            :style="{ display: item.volumeDiscount == 0 ? 'none' : 'block' }"
-                          >
-                            <span
-                              class="full-price"
-                              x-text="item.volumePrice + '₴'"
-                            ></span>
-                            <span
-                              class="discount-percent"
-                              x-text="'-' + item.volumeDiscount + '%'"
-                            ></span>
-                          </div>
-                          <h3>
-                            <span x-text="item.currentPrice"></span>
-                            <span class="curr-symbol">₴</span>
-                          </h3>
-                        </div>
-                      </div>
-                    </div>
-                  </template>
-                  <div class="basket__header gray-border"  x-show="summary.presentList && summary.presentList.length > 0">
-                  <p class="basket__header-title">
-                    {% trans "Подарунки" %}🎁
-                  </p>
-                </div>
-                   <template x-for="(item, index) in summary.presentList" :key="index">
-                    <div
-                      class="basket__item gray-border"
-                      @click.stop="window.location.href = '/product/' + item.productId"
-                    >
-                      <div
-                        class="basket__item-general"
-                      >
-                        <img
-                          :src="item.productImg"
-                          alt="product-item"
-                          class="basket__item-img"
-                        />
-                        <div class="basket__item-info">
-                          <p class="basket__item-name">
-                            <span x-text="item.productName"></span>
-                            (<span x-text="item.volume"></span>) -
-                            <span x-text="item.optionName"></span>
-                          </p>
-                          <p class="basket__item-wraptype">
-                            <template x-if="item.wrapperName">
-                              <span>
-                                <span x-text="item.wrapperName"></span> /
-                                <span x-text="item.wrapperPrice + '₴'"></span>
-                              </span>
-                            </template>
-                            <template x-if="!item.wrapperName">
-                              <span>{% trans "Без пакування" %}</span>
-                            </template>
-                          </p>
-                          <div
-                            class="basket__item-quantity quantity_item quantity-panel-cover-mob"
-                          >
-                            <div>
-                              <h3
-                                class="quantity-value-basket"
-                                x-text="item.productQuantity"
-                              ></h3>
-                            </div>
-                          </div>
-                          <div class="gray-line"></div>
-                        </div>
-                      </div>
-                      <div class="price-wrap">
-                        <!-- Знижка -->
-                        <div class="basket__item-price">
-                          <div
-                            class="basket__item-discount"
-                            :style="{ display: item.volumeDiscount == 0 ? 'none' : 'block' }"
-                          >
-                            <span
-                              class="full-price"
-                              x-text="item.volumePrice + '₴'"
-                            ></span>
-                            <span
-                              class="discount-percent"
-                              x-text="'-' + 100 + '%'"
-                            ></span>
-                          </div>
-                          <h3>
-                            <span x-text="0"></span>
-                            <span class="curr-symbol">₴</span>
-                          </h3>
-                        </div>
-                      </div>
-                    </div>
-                  </template>
-                </div>
-                <div class="order-form">
-                <div class="order-form-wrap">
-                  <form class="order-form__form gray-border" @submit.prevent="">
-                    <div class="order-form__form-wrap">
-                      <div class="form__input-wrap form__input-name">
-                        <img
-                          class="form__input-icon"
-                          src="{% static 'user-icon.svg' %}"
-                          alt='{% trans "Іконка профиля" %}'
-                        />
-                        <input
-                          type="text"
-                          class="form__input"
-                          id="order-form__name"
-                          placeholder='{% trans "Анатолій" %}'
-                          autocomplete="name"
-                          x-model="order.name"
-                        />
-                      </div>
-                      <div class="form__input-wrap form__input-surname">
-                        <img
-                          class="form__input-icon"
-                          src="{% static 'user-icon.svg' %}"
-                          alt='{% trans "Іконка профиля" %}'
-                        />
-                        <input
-                          type="text"
-                          class="form__input"
-                          id="order-form__surname"
-                          placeholder='{% trans "Кузьменко" %}'
-                          x-model="order.surname"
-                          autocomplete="surname"
-                        />
-                      </div>
-                      <div class="form__input-number">
-                        <div class="form__input-wrap">
-                          <input
-                            type="tel"
-                            class="form__input"
-                            id="order-form__phone-code"
-                            placeholder="+380"
-                            x-mask="+999"
-                            maxlength="4"
-                            x-model="order.countryCode"
-                            autocomplete="country-code"
-                            value="+380"
-                          />
-                        </div>
-                        <div class="form__input-wrap">
-                          <input
-                            type="tel"
-                            class="form__input"
-                            id="order-form__phone-num"
-                            placeholder="00 00 00 000"
-                            maxlength="12"
-                            inputmode="numeric"
-                            x-model="order.number"
-                            x-mask="99 99 99 999"
-                            autocomplete="number"
-                          />
-                        </div>
-                      </div>
-                      <div class="form__input-wrap form__input-paymethod">
-                        <img
-                          class="form__input-icon"
-                          src="{% static 'wallet-icon.svg' %}"
-                          alt="icon"
-                        />
-                        <select
-                          class="form__input form__select"
-                          id="order-form__paymethod"
-                          x-model="order.paymentMethod"
-                        >
-                          <option value="" disabled selected>
-                            {% trans "Виберіть спосіб оплати" %}
-                          </option>
-                          <option value="Оплата готівкою">
-                            {% trans "Оплата готівкою" %}
-                          </option>
-                          <option value="Оплата картою при отриманні">
-                            {% trans "Оплата картою при отриманні" %}
-                          </option>
-                          <option value="Оплата онлайн картою">
-                            {% trans "Оплата онлайн картою" %}
-                          </option>
-                          <option value="Банківський переказ">
-                            {% trans "Банківський переказ" %}
-                          </option>
-                        </select>
-                      </div>
-                      <div class="form__input-wrap form__input-deltype">
-                        <img
-                          class="form__input-icon"
-                          src="{% static 'place-icon.svg' %}"
-                          alt="icon"
-                        />
-                        <select
-                          class="form__input form__select"
-                          id="order-form__deltype"
-                          x-model="order.postOffice"
-                        >
-                          <option value="" disabled selected>
-                            {% trans "Виберіть спосіб доставки" %}
-                          </option>
-                          <option value="Нова пошта">
-                            {% trans "Доставка: Нова пошта" %}
-                          </option>
-                          <option value="Укрпошта">
-                            {% trans "Доставка: Укрпошта" %}
-                          </option>
-                          <option value="Justin">
-                            {% trans "Доставка: Justin" %}
-                          </option>
-                          <option value="Самовывоз">
-                            {% trans "Самовывоз" %}
-                          </option>
-                        </select>
-                      </div>
-                      <div class="form__input-wrap form__input-novaid">
-                        <img
-                          class="form__input-icon"
-                          src="{% static 'place-icon.svg' %}"
-                          alt="icon"
-                        />
-                        <input
-                          type="text"
-                          class="form__input"
-                          id="order-form__novaid"
-                          x-model="order.postOfficeId"
-                          placeholder='{% trans "Відділення пошти" %}'
-                          autocomplete="postoffice-id"
-                        />
-                      </div>
 
-                      <div class="form__input-wrap form__input-text">
-                        <textarea
-                          type="text"
-                          class="form__input"
-                          id="order-form__text"
-                          x-model="order.comment"
-                          placeholder='{% trans "Коментар до замовлення" %}'
-                        ></textarea>
-                      </div>
-                      <div class="form__ok-btn">
-                        <button class="form__button" @click.prevent="sendOrder">
-                          {% trans "Оформлення" %}
-                        </button>
-                      </div>
-                    </div>
-                  </form>
-                </div>
-              </div>
-              </div>
-
-              <div class="statistic">
-                <h4 class="statistic__header gray-border">
-                  {% trans "ЗАГАЛЬНА СУМА" %}
-                </h4>
-                <div class="statistic__list statistic__content gray-border">
-                  <div class="" id="statistic-list-wrap">
-                    <div class="statistic__item">
-                      <h4>{% trans "Товари без знижки" %}</h4>
-                      <h4
-                        id="price-without-discount"
-                        x-text="summary.sumPriceNoDiscount+ '₴'"
-                      ></h4>
-                    </div>
-                    <div class="statistic__item">
-                      <h4>{% trans "Пакування" %}</h4>
-                      <h4
-                        id="wrappers-price"
-                        x-text="summary.wrapperPrice+ '₴'"
-                      ></h4>
-                    </div>
-                    <div class="statistic__item">
-                      <h4>{% trans "Загальна сума знижки" %}</h4>
-                      <h4
-                        id="price-with-discount"
-                        x-text="summary.sumDiscountProduct+ '₴'"
-                      ></h4>
-                    </div>
-                    <template
-                      x-for="discount in summary.discount"
-                      :key="discount.name"
-                    >
-                      <div class="statistic__item">
-                        <h4 x-text="discount.name"></h4>
-                        <h4 x-text="discount.value+ '₴'"></h4>
-                      </div>
-                    </template>
-                  </div>
-                  <div class="statistic__line"></div>
-                  <div class="statistic__item">
-                    <h4>{% trans "Загалом" %}</h4>
-                    <h4
-                      class="statistic__fullprice"
-                      id="current-full-price"
-                      x-text="summary.sumPrice"
-                    ></h4>
-                  </div>
-                  <div class="statistic__promocode" id="statistic-promo">
-                    <div class="title-wrap" id="promo-title">
-                      <img
-                        src="{% static 'arrow-sml-black.svg' %}"
-                        alt="arrow"
-                        class="arrow-sml"
-                      />
-                      <h4>{% trans "У вас є промокод?" %}</h4>
-                    </div>
-                    <div class="panel-wrap" id="promo-panel">
-                      <input
-                        type="text"
-                        placeholder='{% trans "Промокод" %}'
-                        id="promo-input"
-                        x-model="promocodeName"
-                      />
-                      <button id="promo-btn" @click="activeCode">
-                        {% trans "Додати" %}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                <div class="promo-info gray-border">
-                  <div
-                    class="discount_container"
-                    x-show="summary.discountLabel"
-                  >
-                    {% trans "Акцій" %}🛒:
-                    <template
-                      id="discount-list"
-                      x-for="label in summary.discountLabel"
-                      :key="label"
-                    >
-                      <p class="promo-item" x-text="label"></p>
-                    </template>
-                  </div>
-                </div>
-
-                <div class="statistic__addinvite gray-border">
-                  <p class="statistic__addinvite-title">
-                    {% trans "Потребуете доповнити" %}<br />
-                    {% trans "Ваш кошик?" %}
-                  </p>
-                  <a
-                    href="{% url 'catalog' %}"
-                    class="statistic__addinvite-link"
-                    >{% trans "Перейти" %}</a
-                  >
-                </div>
-              </div>
-
-            </div>
           </section>
         </div>
       </main>
-      {% include 'footer.html' %}
     </div>
 
     <script>
       document.addEventListener("alpine:init", () => {
         Alpine.data("basketStore", () => ({
           items: Alpine.$persist([]).as("basket"),
-          activeItems: [],
           summary: {
             sumPriceNoDiscount: 0,
-            wrapperPrice: 0,
             sumDiscountProduct: 0,
-            promoCodeDiscount: 0,
             sumPrice: 0,
-            presentList: [],
-            discountLabel: [],
-            present: [],
           },
-          promocodeName: "",
           order: {
-            promocodeName: "",
-            promocodePercent: Alpine.$persist("").as("promocodePercent"),
-            name: Alpine.$persist("").as("name"),
-            surname: Alpine.$persist("").as("surname"),
-            countryCode: Alpine.$persist("").as("countryCode"),
-            number: Alpine.$persist("").as("number"),
-            paymentMethod: Alpine.$persist("").as("paymentMethod"),
+            pib: Alpine.$persist("").as("pib"),
+            phone: Alpine.$persist("").as("phone"),
             postOfficeId: Alpine.$persist("").as("postOfficeId"),
-            comment: Alpine.$persist("").as("comment"),
+            city: Alpine.$persist("").as("city"),
             postOffice: Alpine.$persist("").as("postOffice"),
-            orderId: Alpine.$persist("").as("orderId"),
           },
           init() {
-            if (this.order.orderId) {
-              window.location.href = `/liqpay/${this.order.orderId}/`;
-            }
-            if (!this.order.countryCode) {
-              this.order.countryCode = "+380";
-            }
             this.updateBasket();
             this.$watch("items", () => {
               this.updateBasket();
@@ -527,67 +73,38 @@
               }
             }
           },
-          toggleIndex(id) {
-            if (this.activeItems.includes(id)) {
-              this.activeItems = this.activeItems.filter((i) => i !== id);
-            } else {
-              this.activeItems.push(id);
-            }
-          },
-          isActive(id) {
-            return this.activeItems.includes(id);
-          },
           removeItem(id) {
             this.items = this.items.filter((item) => item.itemId !== id);
             this.activeItems = this.activeItems.filter((i) => i !== id);
           },
-          removeItems() {
-            for (let index of this.activeItems) {
-              this.removeItem(index);
-            }
-          },
-          activeCode() {
-            this.order.promocodeName = this.promocodeName;
-            this.updateBasket();
-          },
           validateOrder() {
             const arrayMessage = [];
-            if (this.order.name.trim() === "") {
-              arrayMessage.push("{% trans 'Ім\'я замовника є обов\'язковим;' %}");
-            }
-            if (this.order.surname.trim() === "") {
-              arrayMessage.push(
-                "{% trans 'Прізвище замовника є обов\'язковим;' %}"
-              );
+            if (this.order.pib.trim() === "") {
+              arrayMessage.push('ПІБ замовника є обов\'язковим;');
             }
             if (
-              this.order.countryCode.trim() === "" ||
-              this.order.countryCode.trim() === "+"
+              this.order.phone.trim() === "" ||
+              this.order.phone.trim() === "+"
             ) {
               arrayMessage.push(
-                "{% trans 'Код країни замовника є обов\'язковим;' %}"
+                "Номер телефона замовника є обов\'язковим;"
               );
             }
-            if (this.order.number.trim() === "") {
-              arrayMessage.push(
-                "{% trans 'Номер замовника є обов\'язковим;' %}"
-              );
-            }
-            if (this.order.paymentMethod.trim() === "") {
-              arrayMessage.push("{% trans 'Спосіб оплати є обов\'язковим;' %}");
+            if (this.order.city.trim() === "") {
+              arrayMessage.push("Місто є обов\'язковим;");
             }
             if (this.order.postOfficeId.trim() === "") {
               arrayMessage.push(
-                "{% trans 'Відділення пошти є обов\'язковим;' %}"
+                "Відділення пошти є обов\'язковим;"
               );
             }
             if (this.order.postOffice.trim() === "") {
               arrayMessage.push(
-                "{% trans 'Спосіб доставки є обов\'язковим;' %}"
+                "Спосіб доставки є обов\'язковим;"
               );
             }
             if (this.summary.sumPrice === 0) {
-              arrayMessage.push("{% trans 'Кошик порожній ( ;' %}");
+              arrayMessage.push("Кошик порожній ( ;");
             }
             return arrayMessage.join("\n");
           },
@@ -620,7 +137,6 @@
           updateBasket() {
             const body = {
               order_list: this.formatedBody(),
-              promocodeName: this.order.promocodeName,
             };
             const csrftoken = this.getCookie("csrftoken");
             fetch("/basket/", {
@@ -633,19 +149,11 @@
             })
               .then((response) => response.json())
               .then((data) => {
-                this.summary.sumPriceNoDiscount = data.data.sumPriceNoDiscount;
-                this.summary.wrapperPrice = data.data.wrapperPrice;
-                this.summary.sumDiscountProduct = data.data.sumDiscountProduct;
-                this.summary.promoCodeDiscount = data.data.promoCodeDiscount;
-                this.order.promocodePercent = data.data.promoCodeDiscount;
-                this.summary.sumPrice = data.data.sumPrice;
-                this.summary.discount = data.data.discount || [];
-                this.summary.discountLabel = data.data.discountLabel || [];
-                this.summary.presentList = data.data.presentList || [];
+                this.summary.sumPriceNoDiscount = data.sumPriceNoDiscount;
+                this.summary.sumDiscountProduct = data.sumDiscountProduct;
+                this.summary.sumPrice = data.sumPrice;
               })
               .catch((error) => {
-                this.promocodeName = "";
-                this.order.promocodeName = "";
                 console.error("Error sending basket:", error);
               });
           },
@@ -671,29 +179,12 @@
               .then((response) => response.json())
               .then((data) => {
                 this.items = [];
-                this.promocodeName = "";
-                this.order.promocodeName = "";
-                this.order.promocodePercent = "";
-                this.activeItems = [];
-                this.order.comment = "";
-                if (data.is_liqpay) {
-                  this.order.orderId = data.data.orderId;
-                  window.location.href = `/liqpay/${data.data.orderId}/`;
-                } else {
-                  alert('{% trans "Дякуємо за замовлення!" %}');
-                }
               })
               .catch((error) => {
                 console.error("Error sending basket:", error);
               });
           },
         }));
-      });
-
-      const promoTitle = document.getElementById("promo-title");
-      const promoBlock = document.getElementById("statistic-promo");
-      promoTitle.addEventListener("click", () => {
-        promoBlock.classList.toggle("active");
       });
     </script>
   </body>

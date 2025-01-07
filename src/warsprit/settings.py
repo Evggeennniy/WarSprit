@@ -124,6 +124,14 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# Директорія для збереження зібраних статичних файлів (для продакшну)
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Шляхи до папок з вашими статичними файлами (для розробки)
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',  # наприклад, якщо ви тримаєте файли в папці static
+]
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 

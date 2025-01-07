@@ -1,25 +1,45 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{% static 'css/thumbnail.css' %}"/>
+    <script defer src="{% static 'js/thumbnail.js' %}" ></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js"
+    ></script>
+    <!-- Alpine Core -->
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/@alpinejs/mask@3.x.x/dist/cdn.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
     <title>Продукт</title>
   </head>
   <body>
-    <div class="overlay" id="overlay"></div>
+    <div id="modal" class="modal">
+        <span class="close">&times;</span>
+        <img class="modal-content" id="modal-image">
+        <div id="caption"></div>
+    </div>
 
     <div class="page-wrap">
       <main class="main">
         <div class="container">
           <h1>{{ product.name }}</h1>
-          <p>{{ product.description }}</p>
+          <p>{{ product.description|safe }}</p>
           <p>Price: {{ product.price }}₴</p>
-          <p>Фото: <img src="{{ product.photo.url }}" alt="{{ product.name }}" /></p>
+          <p>Фото: <img class="thumbnail" height="200" width="200" src="{{ product.photo.url }}" alt="{{ product.name }}" /></p>
 
           <section class="product-images">
             <h3>Images:</h3>
             {% for image in product.images.all %}
-              <img src="{{ image.image.url }}" alt="Product Image" />
+              <img class="thumbnail" height="50" width="50" src="{{ image.image.url }}" alt="Product Image" />
             {% endfor %}
           </section>
 
@@ -38,7 +58,7 @@
                   <div class="option-item">
                     <label>
                       <input type="radio" name="option_{{ group.grouper.id }}" value="{{ option.id }}">
-                      {{ option.value }} - {{ option.additional_price }}₴
+                      {{ option.value|safe }} - {{ option.additional_price }}₴
                     </label>
 
                     {% if option.color %}
@@ -55,6 +75,9 @@
         </div>
       </main>
     </div>
+  <script>
+  {{product.options.all|safe}}
+  </script>
   </body>
 </html>
 
