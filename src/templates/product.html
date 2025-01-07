@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Продукт</title>
+  </head>
+  <body>
+    <div class="overlay" id="overlay"></div>
+
+    <div class="page-wrap">
+      <main class="main">
+        <div class="container">
+          <h1>{{ product.name }}</h1>
+          <p>{{ product.description }}</p>
+          <p>Price: {{ product.price }}₴</p>
+          <p>Фото: <img src="{{ product.photo.url }}" alt="{{ product.name }}" /></p>
+
+          <section class="product-images">
+            <h3>Images:</h3>
+            {% for image in product.images.all %}
+              <img src="{{ image.image.url }}" alt="Product Image" />
+            {% endfor %}
+          </section>
+
+        <section class="product-options">
+          <h3>Options:</h3>
+
+          <!-- Згрупуємо опції за їх групами -->
+          {% regroup product.options.all by group as grouped_options %}
+
+          {% for group in grouped_options %}
+            <div class="option-group">
+              <h4>{{ group.grouper.name }}</h4>  <!-- Виводимо назву групи опцій -->
+
+              <div class="options-list">
+                {% for option in group.list %}
+                  <div class="option-item">
+                    <label>
+                      <input type="radio" name="option_{{ group.grouper.id }}" value="{{ option.id }}">
+                      {{ option.value }} - {{ option.additional_price }}₴
+                    </label>
+
+                    {% if option.color %}
+                      <p>Color:
+                        <span style="background-color: {{ option.get_color }}; width: 20px; height: 20px; display: inline-block;"></span>
+                      </p>
+                    {% endif %}
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          {% endfor %}
+        </section>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
+

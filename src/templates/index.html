@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>War</title>
+  </head>
+  <body>
+    <div class="page-wrap">
+      <main class="main">
+        <div class="main-wrap container">
+          <section class="main__content index">
+              <ul class="content__categories-list">
+                {% for category in categories %}
+                <li class="categories-list__item">
+                    <p class="categories-list__item-title">
+                      {{ category.name }}
+                    </p>
+                       {% for product in category.products.all %}
+                             <a
+                          class="product-link"
+                          href="{% url 'product' product.id %}"
+                        >
+                        <li class="categories-list__item">
+                            <p class="categories-list__item-title">
+                              {{ product.id }}
+                              {{ product.name }}
+                              {{ product.photo }}
+                              {{ product.price }}
+                                <p>Фото: <img src="{{ product.photo.url }}" alt="{{ product.name }}" /></p>
+                            </p>
+
+                        </li>
+                        </a>
+                        {% endfor %}
+                  </a>
+                </li>
+                {% endfor %}
+              </ul>
+        </section>
+           </div>
+      </main>
+    </div>
+  </body>
+</html>
