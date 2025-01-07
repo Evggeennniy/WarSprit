@@ -14,6 +14,7 @@ class Category(models.Model):
 
 class ProductOptionGroup(models.Model):
     name = models.CharField(verbose_name="Назва групи",max_length=64)
+    is_required = models.BooleanField(verbose_name="Обов'язкова група", default=True)
 
     def __str__(self):
         return self.name
