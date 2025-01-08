@@ -42,3 +42,7 @@
     from { transform: scale(0); }
     to { transform: scale(1); }
 }
+
+.active {
+    background-color: red;
+}

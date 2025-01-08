@@ -5,20 +5,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="{% static 'css/thumbnail.css' %}"/>
-    <script defer src="{% static 'js/thumbnail.js' %}" ></script>
-    <script
-      defer
-      src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js"
-    ></script>
-    <!-- Alpine Core -->
-    <script
-      defer
-      src="https://cdn.jsdelivr.net/npm/@alpinejs/mask@3.x.x/dist/cdn.min.js"
-    ></script>
-    <script
-      defer
-      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
-    ></script>
+    <script defer src="{% static 'js/thumbnail.js' %}"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/mask@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <title>Продукт</title>
   </head>
   <body>
@@ -30,10 +20,10 @@
 
     <div class="page-wrap">
       <main class="main">
-        <div class="container">
+        <div class="container" x-data="Product">
           <h1>{{ product.name }}</h1>
           <p>{{ product.description|safe }}</p>
-          <p>Price: {{ product.price }}₴</p>
+          <p>Price: <span x-text="product.price"></span>₴</p>
           <p>Фото: <img class="thumbnail" height="200" width="200" src="{{ product.photo.url }}" alt="{{ product.name }}" /></p>
 
           <section class="product-images">
@@ -43,41 +33,108 @@
             {% endfor %}
           </section>
 
-        <section class="product-options">
-          <h3>Options:</h3>
+          <section class="product-options">
+            <h3>Options:</h3>
+            <!-- Згрупуємо опції за їх групами -->
+            {% regroup product.options.all|dictsort:"group.id" by group.id as grouped_options %}
+            {% for group in grouped_options %}
+              <div class="option-group">
+                <h4>{{ option. }}</h4>  <!-- Виводимо назву групи опцій -->
 
-          <!-- Згрупуємо опції за їх групами -->
-          {% regroup product.options.all by group as grouped_options %}
-
-          {% for group in grouped_options %}
-            <div class="option-group">
-              <h4>{{ group.grouper.name }}</h4>  <!-- Виводимо назву групи опцій -->
-
-              <div class="options-list">
-                {% for option in group.list %}
-                  <div class="option-item">
-                    <label>
-                      <input type="radio" name="option_{{ group.grouper.id }}" value="{{ option.id }}">
-                      {{ option.value|safe }} - {{ option.additional_price }}₴
-                    </label>
-
-                    {% if option.color %}
-                      <p>Color:
-                        <span style="background-color: {{ option.get_color }}; width: 20px; height: 20px; display: inline-block;"></span>
-                      </p>
-                    {% endif %}
-                  </div>
-                {% endfor %}
+                <span class="options-list">
+                  {% for option in group.list %}
+                    <span :class="{ 'active':  isOptionSelected({{ option.id }}) }"
+                         @click="toggleOption({{ group.grouper }},{{ option.id }})">
+                        {{ option.value|safe }} - {{ option.additional_price }}₴
+                      {% if option.color %}
+                          <span style="background-color: {{ option.get_color }}; width: 20px; height: 20px; display: inline-block;"></span>
+                      {% endif %}
+                    </span>
+                  {% endfor %}
+                </span>
               </div>
-            </div>
-          {% endfor %}
-        </section>
+            {% endfor %}
+          </section>
+
+            <button @click="addBasket" style="margin-top: 20px;">Додати до кошика</button>
         </div>
       </main>
     </div>
-  <script>
-  {{product.options.all|safe}}
-  </script>
+
+    <script>
+      document.addEventListener("alpine:init", () => {
+        Alpine.data("Product", () => ({
+          basket: Alpine.$persist([]).as("basket"),
+          product: {
+            id: "{{ product.id }}",
+            name: "{{ product.name }}",
+            photo: "{{ product.photo.url }}",
+            basePrice: {{ product.price }},
+            price: {{ product.price }},
+            productQuantity: 1,
+            activeOptions: [],
+          },
+          options: [],
+          init() {
+            // Load options from the template using regroup
+          this.options = [
+              {% for option in product.options.all %}
+                {
+                  id: {{ option.id }},
+                  group_id: {{ option.group.id }},
+                  group_name: "{{ option.group.name|escapejs }}",
+                  value: "{{ option.value|escapejs }}",
+                  additional_price: {{ option.additional_price }},
+                  is_required: {{ option.group.is_required|yesno:'true,false' }},
+                  color: "{{ option.get_color }}",
+                },
+              {% endfor %}
+            ];
+
+            // Automatically select cheapest options for required groups
+            const requiredGroups = this.options.filter(option => option.is_required);
+            const cheapestOptions = requiredGroups.reduce((result, option) => {
+              if (!result[option.group_id] || option.additional_price < result[option.group_id].additional_price) {
+                result[option.group_id] = option;
+              }
+              return result;
+            }, {});
+
+            // Set default selected options
+            Object.values(cheapestOptions).forEach(option => {
+              this.product.activeOptions.push(option);
+            });
+
+            // Update total price
+            this.updatePrice();
+          },
+          toggleOption(group_id, option_id) {
+            // Deselect previous option from the same group
+            this.product.activeOptions = this.product.activeOptions.filter(
+              activeOption => activeOption.group_id !== group_id
+            );
+
+            // Add the new option
+            this.product.activeOptions.push(this.options.find(item => item.id === option_id));
+
+            // Update total price
+            this.updatePrice();
+          },
+          updatePrice() {
+            const additionalPrice = this.product.activeOptions.reduce(
+              (total, option) => total + option.additional_price,
+              0
+            );
+            this.product.price = this.product.basePrice + additionalPrice;
+          },
+          addBasket() {
+            this.basket.push(this.product);
+          },
+          isOptionSelected(option_id) {
+            return this.product.activeOptions.some(activeOption => activeOption.id === option_id);
+          },
+        }));
+      });
+    </script>
   </body>
 </html>
-

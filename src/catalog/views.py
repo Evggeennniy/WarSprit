@@ -33,6 +33,7 @@ class ProductDetailsView(DetailView):
             'options__color',
             'options__group',
         )
+
 def basket(request):
     try:
         if request.method == "POST":
