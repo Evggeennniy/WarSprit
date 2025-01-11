@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.forms import TextInput
+from django.utils.safestring import mark_safe
 
 from .models import Category, ProductImage, ProductOption, Product, OrderProductPart, Order, Color, \
     ProductOptionGroup, OrderOptionsProductPart
@@ -7,6 +8,8 @@ from .models import Category, ProductImage, ProductOption, Product, OrderProduct
 
 class ProductInline(admin.TabularInline):
     model = Product
+    fields = ("mini_photo", "name", "price", "get_min_full_price", "view_count", "purchase_count")
+    readonly_fields = ("view_count", "purchase_count", "get_min_full_price", "mini_photo")
     extra = 0
 
 
@@ -29,6 +32,9 @@ class ProductProductOption(admin.TabularInline):
 class ProductImageInline(admin.TabularInline):
     model = ProductImage
     extra = 0
+    fields = ("image", "mini_photo",)
+    readonly_fields = ("mini_photo",)
+
 
 @admin.register(Color)
 class ColorAdmin(admin.ModelAdmin):
@@ -51,15 +57,19 @@ class ProductsAdmin(admin.ModelAdmin):
         ProductImageInline
     ]
 
-    list_display = ("name", "category", "get_min_full_price", "view_count", "purchase_count",)
+    list_display = ("name","mini_photo", "category", "get_min_full_price", "view_count", "purchase_count")
 
     search_fields = ("id", "name","category__name",)
 
-    readonly_fields = ("view_count", "purchase_count", "get_min_full_price")
+    readonly_fields = ("mini_photo", "view_count", "purchase_count", "get_min_full_price", "big_photo")
 
-    fields = (("view_count", "purchase_count","get_min_full_price"),"name", "category",("price","photo"),"description")
+    fields = (("view_count", "purchase_count","get_min_full_price"),"name", "category", "price", "description","photo", "big_photo")
 
     ordering = ("view_count", "purchase_count", "price",)
+
+    @admin.display(description="photo")
+    def big_photo(self, odj):
+        return mark_safe(f"<a target='_blank' href='{odj.photo.url}'><img src='{odj.photo.url}' width=500></a>")
 
 
 class OrderOptionPartInline(admin.TabularInline):

@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.db import models
 from django.utils.html import format_html
 from colorfield.fields import ColorField
+from django.utils.safestring import mark_safe
 from django_ckeditor_5.fields import CKEditor5Field
 
 
@@ -79,6 +80,10 @@ class Product(models.Model):
         self.view_count += 1
         self.save(update_fields=["view_count"])
 
+    @admin.display(description="photo")
+    def mini_photo(self):
+        return mark_safe(f"<a target='_blank' href='{self.photo.url}'><img src='{self.photo.url}' width=70></a>")
+
     @admin.display(description="Мінімальна ціна товара з опціями")
     def get_min_full_price(self):
         """Calculate the minimum full price by adding the cheapest option from each group."""
@@ -144,6 +149,10 @@ class ProductImage(models.Model):
     class Meta:
         verbose_name = "Зображення товару"
         verbose_name_plural = "Зображення товарiв"
+
+    @admin.display(description="photo")
+    def mini_photo(self):
+        return mark_safe(f"<a target='_blank' href='{self.image.url}'><img src='{self.image.url}' width=70></a>")
 
 
 class Order(models.Model):
