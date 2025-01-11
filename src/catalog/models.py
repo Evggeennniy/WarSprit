@@ -45,41 +45,9 @@ class Color(models.Model):
         verbose_name = "Колір опцiй"
         verbose_name_plural = "Коліри опцiй"
 
-
-class ProductOption(models.Model):
-    group = models.ForeignKey(ProductOptionGroup, verbose_name="Група", on_delete=models.CASCADE, related_name="options"
-    )
-    color = models.ForeignKey(
-        Color, verbose_name="Колір", on_delete=models.CASCADE, related_name="options",blank=True, null=True )
-
-    additional_price = models.IntegerField(verbose_name="Додаткова вартість", default=0)
-    value = CKEditor5Field(
-        verbose_name="Назва опцій", max_length=100, config_name="default"
-    )
-
-    def get_group(self):
-        return self.group.name
-
-    def get_color(self):
-        if self.color:
-            return self.color.color  # type: ignore
-
-    @admin.display(ordering="value")
-    def format_html_value(self):
-        return format_html(self.value)
-
-    def __str__(self) -> str:
-        return  f"{self.group.name}-{self.value}-{self.additional_price}₴" if self.additional_price else f"{self.group.name}-{self.value}"
-
-    class Meta:
-        verbose_name = "Опцiя різновиду"
-        verbose_name_plural = "Опцiї різновидiв"
-
-
 class Product(models.Model):
     name = models.CharField(verbose_name="Назва", max_length=64)
     description = models.TextField(verbose_name="Опис")
-    options = models.ManyToManyField(ProductOption, related_name="products", blank=True)
     category = models.ForeignKey(
         verbose_name="Категорiя",
         to=Category,
@@ -110,6 +78,55 @@ class Product(models.Model):
         """Збільшити кількість переглядів на 1."""
         self.view_count += 1
         self.save(update_fields=["view_count"])
+
+    @admin.display(description="Мінімальна ціна товара з опціями")
+    def get_min_full_price(self):
+        """Calculate the minimum full price by adding the cheapest option from each group."""
+        # Get all unique groups associated with the product via the options
+        groups = ProductOptionGroup.objects.filter(options__product=self).distinct()
+
+        # Initialize the total minimum price with the base price
+        min_price = self.price
+
+        # Iterate over each group to find the cheapest option in that group
+        for group in groups:
+            # Filter options for the current product and group, and get the minimum additional price
+            min_additional_price = group.options.filter(product=self).order_by(
+                'additional_price').first().additional_price
+            min_price += min_additional_price
+
+        return min_price
+
+class ProductOption(models.Model):
+    group = models.ForeignKey(ProductOptionGroup, verbose_name="Група", on_delete=models.CASCADE, related_name="options"
+    )
+    product = models.ForeignKey(Product, verbose_name="Продукт", on_delete=models.CASCADE, related_name="options"
+    )
+    color = models.ForeignKey(
+        Color, verbose_name="Колір", on_delete=models.CASCADE, related_name="options",blank=True, null=True )
+
+    additional_price = models.IntegerField(verbose_name="Додаткова вартість", default=0)
+    value = CKEditor5Field(
+        verbose_name="Назва опцій", max_length=100, config_name="default"
+    )
+
+    def get_group(self):
+        return self.group.name
+
+    def get_color(self):
+        if self.color:
+            return self.color.color  # type: ignore
+
+    @admin.display(ordering="value")
+    def format_html_value(self):
+        return format_html(self.value)
+
+    def __str__(self) -> str:
+        return  f"{self.group.name}-{format_html(self.value)}-{self.additional_price}₴" if self.additional_price else f"{self.group.name}-{format_html(self.value)}"
+
+    class Meta:
+        verbose_name = "Опцiя різновиду"
+        verbose_name_plural = "Опцiї різновидiв"
 
 
 class ProductImage(models.Model):
@@ -183,6 +200,18 @@ class OrderProductPart(models.Model):
         """
         return ""
 
+    @admin.display(description="Опцій ")
+    def option_text(self):
+        options = self.option_items
+        if not options:
+            return "No options available"
+            # Формуємо HTML список
+        options_list = "<ul>"
+        for option in options:
+            options_list += f"<li>fff{str(option)}</li>"
+        options_list += "</ul>"
+        return options
+
     def save(self, *args, **kwargs):
         """
         Перевизначення методу save для автоматичного оновлення purchase_count.
@@ -198,7 +227,7 @@ class OrderOptionsProductPart(models.Model):
         verbose_name="Відношення до Продукту",
         to=OrderProductPart,
         on_delete=models.CASCADE,
-        related_name="order_items",
+        related_name="option_items",
     )
     option = models.ForeignKey(ProductOption, verbose_name="Група", on_delete=models.CASCADE, related_name="options_order"
                               )

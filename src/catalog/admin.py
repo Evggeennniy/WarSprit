@@ -22,6 +22,9 @@ class CategoriesAdmin(admin.ModelAdmin):
     ]
 
 
+class ProductProductOption(admin.TabularInline):
+    model = ProductOption
+    extra = 0
 
 class ProductImageInline(admin.TabularInline):
     model = ProductImage
@@ -40,24 +43,23 @@ class ColorAdmin(admin.ModelAdmin):
 class ProductOptionGroupAdmin(admin.ModelAdmin):
     list_display = ("name",)
 
-@admin.register(ProductOption)
-class ProductOptionAdmin(admin.ModelAdmin):
-    list_display = ("group", "format_html_value")
-
 
 @admin.register(Product)
 class ProductsAdmin(admin.ModelAdmin):
     inlines = [
-        ProductImageInline,
+        ProductProductOption,
+        ProductImageInline
     ]
 
-    list_display = ("name", "category", "price", "view_count", "purchase_count",)
+    list_display = ("name", "category", "get_min_full_price", "view_count", "purchase_count",)
 
     search_fields = ("id", "name","category__name",)
 
-    readonly_fields = ("view_count", "purchase_count",)
+    readonly_fields = ("view_count", "purchase_count", "get_min_full_price")
 
-    ordering = ("view_count", "purchase_count", "price")
+    fields = (("view_count", "purchase_count","get_min_full_price"),"name", "category",("price","photo"),"description")
+
+    ordering = ("view_count", "purchase_count", "price",)
 
 
 class OrderOptionPartInline(admin.TabularInline):
@@ -70,28 +72,14 @@ class OrderPartAdmin(admin.ModelAdmin):
     inlines = [OrderOptionPartInline]
 
 
-
-# Order and OrderPart Models Configuration
 class OrderPartInline(admin.TabularInline):
     model = OrderProductPart
     extra = 0
     empty_value_display = "-empty-"
 
-    @admin.display(description="Опцій")
-    def view_options(self, obj):
-        options = obj.options_order.all()
-        if not options:
-            return "No options available"
-            # Формуємо HTML список
-        options_list = "<ul>"
-        for option in options:
-            options_list += f"<li>fff{str(option)}</li>"
-        options_list += "</ul>"
-        return options_list
-
-    list_display = ("view_options", 'product', 'count')
-    readonly_fields = ('view_options',)
-    fields = ('view_options', 'product', 'count',)
+    list_display = ("option_text", 'product', 'count')
+    readonly_fields = ('option_text',)
+    fields = ('option_text', 'product', 'count',)
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):

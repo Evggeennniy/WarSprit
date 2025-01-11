@@ -105,62 +105,11 @@
 
 
       <div class="hoodies__cards">
-        <div class="selling__card">
-          <img class="card__img" src="{% static 'img/hoodie11.png' %}" alt="">
-          <div class="card__info">
-            <p class="card__name">Принт “Я командир”</p>
-            <div class="card__buy">
-              <button class="card__buy__btn">
-                <img src="{% static 'icon/shopping-cart.png' %}" alt="">
-                <p class="card__buy__text">купити</p>
-              </button>
-              <p class="card__price">4 500₴</p>
-            </div>
-          </div>
+        {% for product in top_products %}
+        {% include 'elements/productCard.html' %}
+      {% endfor %}
 
-        </div>
-        <div class="selling__card">
-          <img class="card__img" src="{% static 'img/hoodie12.png' %}" alt="">
-          <div class="card__info">
-            <p class="card__name">Принт “Не в мою зміну”</p>
-            <div class="card__buy">
-              <button class="card__buy__btn">
-                <img src="{% static 'icon/shopping-cart.png' %}" alt="">
-                <p class="card__buy__text">купити</p>
-              </button>
-              <p class="card__price">4 500₴</p>
-            </div>
-          </div>
 
-        </div>
-        <div class="selling__card">
-          <img class="card__img" src="{% static 'img/hoodie13.png' %}" alt="">
-          <div class="card__info">
-            <p class="card__name">Принт Warrior spirit</p>
-            <div class="card__buy">
-              <button class="card__buy__btn">
-                <img src="{% static 'icon/shopping-cart.png' %}" alt="">
-                <p class="card__buy__text">купити</p>
-              </button>
-              <p class="card__price">4 500₴</p>
-            </div>
-          </div>
-
-        </div>
-        <div class="selling__card">
-          <img class="card__img" src="{% static 'img/hoodie14.png' %}" alt="">
-          <div class="card__info">
-            <p class="card__name">Принт “ДСНС” 1</p>
-            <div class="card__buy">
-              <button class="card__buy__btn">
-                <img src="{% static 'icon/shopping-cart.png' %}" alt="">
-                <p class="card__buy__text">купити</p>
-              </button>
-              <p class="card__price">4 500₴</p>
-            </div>
-          </div>
-
-        </div>
       </div>
     </div>
   </div>
@@ -248,10 +197,21 @@
             );
             this.product.price = this.product.basePrice + additionalPrice;
           },
+           generateRandomString() {
+              const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+              let result = '';
+              const length = 10; // довжина рядка
+
+              for (let i = 0; i < length; i++) {
+                  result += characters.charAt(Math.floor(Math.random() * characters.length));
+              }
+
+              return result;
+          },
           addBasket() {
             this.basket.push({
               ...this.product,
-              "itemID": this.basket.length + 1
+              "itemID": this.generateRandomString()
             });
             this.buyButtonText = "Додано";
             this.isBuyButtonActive = true;

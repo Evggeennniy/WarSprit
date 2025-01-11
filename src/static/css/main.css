@@ -631,3 +631,11 @@
     font-size: 3rem;
   }
 }
+
+.carousel {
+    scroll-snap-type: x mandatory;
+}
+
+.item {
+    scroll-snap-align: center;
+}

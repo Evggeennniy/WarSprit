@@ -1,0 +1,19 @@
+{% load static %}
+<a
+    class="product-link item"
+    href="{% url 'product' product.id %}"
+ >
+    <div class="selling__card">
+      <img class="card__img" src="{{ product.photo.url }}" alt="{{ product.name }}">
+      <div class="card__info">
+        <p class="card__name"> {{ product.name }}</p>
+        <div class="card__buy">
+          <button class="card__buy__btn">
+            <img src="{% static 'icon/shopping-cart.png' %}" alt="">
+            <p class="card__buy__text">купити</p>
+          </button>
+          <p class="card__price">{{ product.get_min_full_price }}₴</p>
+        </div>
+      </div>
+    </div>
+ </a>

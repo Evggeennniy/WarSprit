@@ -36,10 +36,21 @@ class ProductDetailsView(DetailView):
             'options__group',
         )
 
+    def get_top_products(self):
+        """Метод для отримання 4 найбільш покупних товарів"""
+        return Product.objects.order_by('-purchase_count')[:4]
+
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         self.object.increment_view_count()
-        return super().get(request, *args, **kwargs)
+
+        # Отримати топ-4 продукти через окремий метод
+        top_products = self.get_top_products()
+
+        context = self.get_context_data(object=self.object)
+        context['top_products'] = top_products
+
+        return self.render_to_response(context)
 
 
 def basket(request):
