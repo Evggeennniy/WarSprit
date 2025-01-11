@@ -1,12 +1,14 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Alpine Plugins -->
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}"/>
-    <script
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shopping Cart</title>
+  <link rel="stylesheet" href="{% static 'css/index.css' %}">
+  <link rel="stylesheet" href="{% static 'css/basket.css' %}">
+      <script
       defer
       src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js"
     ></script>
@@ -19,21 +21,130 @@
       defer
       src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
     ></script>
-    <meta name="csrfmiddlewaretoken" content="{{ csrf_token }}" />
-    <title>War</title>
-  </head>
-  <body>
-    <div class="page-wrap">
-      <main class="main">
-        <div class="overlay" id="overlay"></div>
-        <div x-data="basketStore" class="container">
-          <section class="main__fullcontent basket">
+</head>
 
-          </section>
+<body>
+
+  <div class="container__header">
+    <div class="header__wrapper">
+      <div class="container__inner">
+        <nav class="navbar">
+          <div class="navbar__socials">
+            <a target="_blank" href="https://telegram.org">
+              <img src="{% static 'icon/tg.png' %}" alt="tg icon">
+            </a>
+            <a target="_blank" href="https://instagram.com">
+              <img src="{% static 'icon/instagram.png' %}" alt="instagram icon">
+            </a>
+            <p class="navbar__number">+380 (99) (071) (41) (07)</p>
+          </div>
+          <div class="navbar__logo">
+            <a href="{% url 'index' %}">
+              <img src="{% static 'icon/logo-nav.png' %}" alt="war spirit logo">
+            </a>
+          </div>
+          <div class="navbar__catalog">
+            <a class="navbar__cart" href="{% url 'basket' %}">
+              <img src="{% static 'icon/shopping-cart.png' %}" alt="shopping cart">
+              <p class="navbar__cart__text">кошик</p>
+            </a>
+            <a class="navbar__catalog__btn" href="{% url 'index' %}">
+              catalog
+            </a>
+            <a class="navbar__catalog__mini" href="{% url 'basket' %}">
+              <img src="{% static 'icon/shopping-cart.png' %}" alt="">
+            </a>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="break__line"></div>
+  </div>
+
+  <div class="container__inner container__wrapper"  x-data="basketStore">
+    <div class="container__cart">
+      <p class="cart__text">головна / кошик</p>
+      <div class="cart__content">
+        <div class="cart__cards">
+          <template x-for="(item, index) in items" :key="item.itemID">
+          <div class="cart__card">
+            <img :src="item.photo" alt="">
+            <div class="card__info">
+              <p class="card__name" x-text="item.name"></p>
+               <template x-for="(option, index) in item.activeOptions" :key="option.group_id">
+              <p class="card__size"><span x-text="option.group_name"></span>: <span x-text="option.value"></span></p>
+               </template>
+              <div class="card__price__quantity">
+                <p class="card__price"><span x-text="item.price"></span>₴</p>
+                <div class="card__quantity__container">
+                  <button class="quantity__btn" @click.stop="editQuantity(index, 'minus', item.itemID)">
+                    <img src="{% static 'icon/minus.png' %}" alt="">
+                  </button>
+                  <p class="card__quantity"  x-text="item.productQuantity"></p>
+                  <button class="quantity__btn" @click.stop="editQuantity(index, 'plus', item.itemID)">
+                    <img src="{% static 'icon/plus.png' %}" alt="">
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+         <div class="dashed__line"></div>
+         </template>
         </div>
-      </main>
+        <div class="break__line__vr"></div>
+        <div class="break__line__hr"></div>
+        <div class="cart__checkout">
+          <p class="checkout__title">сума замовлення</p>
+          <div class="break__line__checkout"></div>
+          <div class="price__count">
+            <div class="price__without__dc">
+              <p class="grey__text">Ціна без знижки</p>
+              <p class="cost__without__dc"><span x-text="summary.sumPriceNoDiscount"></span>₴</p>
+            </div>
+            <div class="total__dc">
+              <p class="grey__text">Загальна знижка</p>
+              <p class="total__dc__amount"><span x-text="summary.sumDiscountProduct"></span>₴</p>
+            </div>
+            <div class="checkout__packaging">
+              <p class="grey__text">Пакування</p>
+              <p class="packaging__cost">безкоштовно</p>
+            </div>
+          </div>
+          <div class="break__line__checkout"></div>
+          <div class="checkout__total__cost">
+            <p class="total__cost__text">Загальна сума</p>
+            <p class="total__cost"><span x-text="summary.sumPrice"></span>₴</p>
+          </div>
+          <button id="checkout-order-btn" class="checkout__order__btn">оформити</button>
+        </div>
+      </div>
     </div>
 
+    <div id="container-contact" class="container__contact">
+      <div class="contact__form__container">
+        <div class="contact__form__wrapper">
+          <div class="contact__form__upper">
+            <p class="contact__form__title">Форма відправки</p>
+            <button id="contact-form-close-btn" class="contact__form__close__btn">
+              <img src="{% static 'icon/x.png' %}" alt="">
+            </button>
+          </div>
+          <div class="contact__inputs">
+            <input placeholder="ПІБ" class="contact__input contact__name" type="text" x-model="order.pib">
+            <div class="contact__inputs__mid">
+              <input placeholder="Номер телефону" class="contact__input contact__phonenumber" type="text" x-model="order.phone" x-mask="-99 99 99 99 999">
+              <input placeholder="№ відділення" class="contact__input contact__branch__number" type="text" x-model="order.postOfficeId">
+            </div>
+            <div class="contact__inputs__footer">
+              <input placeholder="Виберіть пошту" class="contact__input contact__mail" type="text" x-model="order.postOffice">
+              <input placeholder="Місто" class="contact__input contact__city" type="text" x-model="order.city">
+            </div>
+          </div>
+          <button class="contact__send__btn" @click.prevent="sendOrder">підтвердити</button>
+        </div>
+      </div>
+    </div>
+  </div>
     <script>
       document.addEventListener("alpine:init", () => {
         Alpine.data("basketStore", () => ({
@@ -51,6 +162,9 @@
             postOffice: Alpine.$persist("").as("postOffice"),
           },
           init() {
+            if (!this.order.phone) {
+              this.order.phone = "+380";
+            }
             this.updateBasket();
             this.$watch("items", () => {
               this.updateBasket();
@@ -69,13 +183,13 @@
                 action === "minus" &&
                 this.items[itemIndex].productQuantity === 1
               ) {
+                this.items[itemIndex].productQuantity--;
                 this.removeItem(temId);
               }
             }
           },
           removeItem(id) {
-            this.items = this.items.filter((item) => item.itemId !== id);
-            this.activeItems = this.activeItems.filter((i) => i !== id);
+            this.items = this.items.filter((item) => item.itemID !== id);
           },
           validateOrder() {
             const arrayMessage = [];
@@ -111,11 +225,15 @@
           formatedBody() {
             return this.items.map((item) => {
               return {
-                productId: item.productId,
-                volumeId: item.volumeId,
-                wrapperId: item.wrapperId,
+                options: this.formatedOption(item.activeOptions),
+                productId: item.id,
                 productQuantity: item.productQuantity,
               };
+            });
+          },
+          formatedOption(options) {
+            return options.map((option) => {
+              return option.id
             });
           },
           getCookie(name) {
@@ -149,9 +267,10 @@
             })
               .then((response) => response.json())
               .then((data) => {
-                this.summary.sumPriceNoDiscount = data.sumPriceNoDiscount;
-                this.summary.sumDiscountProduct = data.sumDiscountProduct;
-                this.summary.sumPrice = data.sumPrice;
+                console.log(data);
+                this.summary.sumPriceNoDiscount = data.data.sumPriceNoDiscount;
+                this.summary.sumDiscountProduct = data.data.sumDiscountProduct;
+                this.summary.sumPrice = data.data.sumPrice;
               })
               .catch((error) => {
                 console.error("Error sending basket:", error);
@@ -187,5 +306,29 @@
         }));
       });
     </script>
-  </body>
+    <script>
+    let isOpen = false;  // Изначально окно закрыто
+    const openBtn = document.getElementById("checkout-order-btn");
+    const modalWindow = document.getElementById("container-contact");
+    const modalCloseBtn = document.getElementById("contact-form-close-btn");
+  
+    function openModal() {
+      if (!isOpen) {
+        modalWindow.style.display = "flex";
+        isOpen = true;
+      }
+    }
+
+    function closeModal() {
+      modalWindow.style.display = "none";
+      isOpen = false;
+    }
+  
+    openBtn.addEventListener("click", openModal);
+  
+    modalCloseBtn.addEventListener("click", closeModal);
+  </script>
+
+</body>
+
 </html>

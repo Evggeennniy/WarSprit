@@ -1,70 +1,216 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="{% static 'css/thumbnail.css' %}"/>
-    <script defer src="{% static 'js/thumbnail.js' %}"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/mask@3.x.x/dist/cdn.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <title>Продукт</title>
-  </head>
-  <body>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ product.name }}</title>
+  <link rel="stylesheet" href="{% static 'css/index.css' %}">
+  <link rel="stylesheet" href="{% static 'css/product.css' %}">
+  <script defer src="{% static 'js/thumbnail.js' %}"></script>
+  <link rel="stylesheet" href="{% static 'css/thumbnailPhoto.css' %}"/>
+  <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+
+<body>
+
+  <div class="container__header">
+    <div class="header__wrapper">
+      <div class="container__inner">
+        <nav class="navbar">
+          <div class="navbar__socials">
+            <a target="_blank" href="https://telegram.org">
+              <img src="{% static 'icon/tg.png' %}" alt="tg icon">
+            </a>
+            <a target="_blank" href="https://instagram.com">
+              <img src="{% static 'icon/instagram.png' %}" alt="instagram icon">
+            </a>
+            <p class="navbar__number">+380 (99) (071) (41) (07)</p>
+          </div>
+          <div class="navbar__logo">
+            <a href="index.html">
+              <img src="{% static 'icon/logo-nav.png' %}" alt="war spirit logo">
+            </a>
+          </div>
+          <div class="navbar__catalog">
+            <a class="navbar__cart" href="{% url 'basket' %}">
+              <img src="{% static 'icon/shopping-cart.png' %}" alt="shopping cart">
+              <p class="navbar__cart__text">кошик</p>
+            </a>
+            <a class="navbar__catalog__btn" href="{% url 'index' %}">
+              catalog
+            </a>
+            <a class="navbar__catalog__mini" href="{% url 'basket' %}">
+              <img src="{% static 'icon/shopping-cart.png' %}" alt="">
+            </a>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="break__line"></div>
+  </div>
+
+  <div class="container__inner container__main" x-data="Product">
+    <p class="main__title">головна / товар</p>
+    <p class="main__title__mini">кошик</p>
+    <div class="product__content">
+      <div class="product__images">
+        <img src="{{ product.photo.url }}" class="thumbnail" alt="">
+        <div class="product__showcase">
+          {% for image in product.images.all %}
+          <img src="{{ image.image.url }}" class="thumbnail" alt="">
+          {% endfor %}
+        </div>
+      </div>
+      <div class="product__info">
+        <div class="product__main__info">
+          <div class="product__name">
+            <p class="product__name__text">{{ product.name }}</p>
+            <div class="product__inspect__btns">
+              <button class="product__inspect__btn">
+                <img src="{% static 'icon/arrow-left.png' %}" alt="">
+              </button>
+              <button class="product__inspect__btn">
+                <img src="{% static 'icon/arrow-right.png' %}" alt="">
+              </button>
+            </div>
+          </div>
+          <p class="product__price" > <span x-text="product.price"></span>₴</p>
+        </div>
+        <div class="dashed__line"></div>
+        <div class="product__desc">
+          <p class="product__desc__text">
+          {{ product.description }}
+          </p>
+        </div>
+        <div class="dashed__line"></div>
+        <div class="product__info__size">
+          {% regroup product.options.all|dictsort:"group.id" by group.id as grouped_options %}
+          {% for group in grouped_options %}
+          {% for option in group.list %}
+          <div class="product__info__size__container" :class="{ 'active':  isOptionSelected({{ option.id }}) }"  @click="toggleOption({{ group.grouper }},{{ option.id }})">
+              {% if option.color %}
+                  <div class="color" style="background-color: {{ option.get_color }}; width: 20px; height: 20px; display: inline-block;"></div>
+              {% endif %}
+
+            <p class="product__info__size__text" :class="{ 'active':  isOptionSelected({{ option.id }}) }">{{ option.value|safe }}
+              {% if option.additional_price %}
+                  - {{ option.additional_price }}₴
+              {% endif %}
+            </p>
+          </div>
+          {% endfor %}
+         {% endfor %}
+        </div>
+        <div class="product__quantity__container">
+          <button class="product__addtocart__btn" @click="addBasket" :class="{ 'active': isBuyButtonActive}">
+            <img src="{% static 'icon/shopping-cart.png' %}" alt="">
+            <p class="product__cart__text" x-text="buyButtonText"></p>
+          </button>
+          <div class="product__quantity__btns">
+            <button class="quantity__btn">
+              <img src="{% static 'icon/minus.png' %}" alt="" @click.stop="editQuantity('minus')">
+            </button>
+            <p class="product__quantity" x-text="product.productQuantity"></p>
+            <button class="quantity__btn">
+              <img src="{% static 'icon/plus.png' %}" alt="" @click.stop="editQuantity('plus')">
+            </button>
+          </div>
+        </div>
+        <div class="product__more__container">
+          <a target="_blank" class="product__more__link" href="https://instagram.com">
+            <p class="product__more__about">Детальніше о товару</p>
+            <img src="{% static 'icon/instagram.png' %}" alt="">
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="container__inner also__buy__container">
+    <div class="main__wrapper__hoodies">
+      <div class="hoodies__upper">
+        <p class="hoodies__upper__text">З цим купують</p>
+        <div class="hoodies__dashed__line"></div>
+      </div>
+
+
+
+      <div class="hoodies__cards">
+        <div class="selling__card">
+          <img class="card__img" src="{% static 'img/hoodie11.png' %}" alt="">
+          <div class="card__info">
+            <p class="card__name">Принт “Я командир”</p>
+            <div class="card__buy">
+              <button class="card__buy__btn">
+                <img src="{% static 'icon/shopping-cart.png' %}" alt="">
+                <p class="card__buy__text">купити</p>
+              </button>
+              <p class="card__price">4 500₴</p>
+            </div>
+          </div>
+
+        </div>
+        <div class="selling__card">
+          <img class="card__img" src="{% static 'img/hoodie12.png' %}" alt="">
+          <div class="card__info">
+            <p class="card__name">Принт “Не в мою зміну”</p>
+            <div class="card__buy">
+              <button class="card__buy__btn">
+                <img src="{% static 'icon/shopping-cart.png' %}" alt="">
+                <p class="card__buy__text">купити</p>
+              </button>
+              <p class="card__price">4 500₴</p>
+            </div>
+          </div>
+
+        </div>
+        <div class="selling__card">
+          <img class="card__img" src="{% static 'img/hoodie13.png' %}" alt="">
+          <div class="card__info">
+            <p class="card__name">Принт Warrior spirit</p>
+            <div class="card__buy">
+              <button class="card__buy__btn">
+                <img src="{% static 'icon/shopping-cart.png' %}" alt="">
+                <p class="card__buy__text">купити</p>
+              </button>
+              <p class="card__price">4 500₴</p>
+            </div>
+          </div>
+
+        </div>
+        <div class="selling__card">
+          <img class="card__img" src="{% static 'img/hoodie14.png' %}" alt="">
+          <div class="card__info">
+            <p class="card__name">Принт “ДСНС” 1</p>
+            <div class="card__buy">
+              <button class="card__buy__btn">
+                <img src="{% static 'icon/shopping-cart.png' %}" alt="">
+                <p class="card__buy__text">купити</p>
+              </button>
+              <p class="card__price">4 500₴</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
     <div id="modal" class="modal">
         <span class="close">&times;</span>
         <img class="modal-content" id="modal-image">
         <div id="caption"></div>
     </div>
 
-    <div class="page-wrap">
-      <main class="main">
-        <div class="container" x-data="Product">
-          <h1>{{ product.name }}</h1>
-          <p>{{ product.description|safe }}</p>
-          <p>Price: <span x-text="product.price"></span>₴</p>
-          <p>Фото: <img class="thumbnail" height="200" width="200" src="{{ product.photo.url }}" alt="{{ product.name }}" /></p>
-
-          <section class="product-images">
-            <h3>Images:</h3>
-            {% for image in product.images.all %}
-              <img class="thumbnail" height="50" width="50" src="{{ image.image.url }}" alt="Product Image" />
-            {% endfor %}
-          </section>
-
-          <section class="product-options">
-            <h3>Options:</h3>
-            <!-- Згрупуємо опції за їх групами -->
-            {% regroup product.options.all|dictsort:"group.id" by group.id as grouped_options %}
-            {% for group in grouped_options %}
-              <div class="option-group">
-                <h4>{{ option. }}</h4>  <!-- Виводимо назву групи опцій -->
-
-                <span class="options-list">
-                  {% for option in group.list %}
-                    <span :class="{ 'active':  isOptionSelected({{ option.id }}) }"
-                         @click="toggleOption({{ group.grouper }},{{ option.id }})">
-                        {{ option.value|safe }} - {{ option.additional_price }}₴
-                      {% if option.color %}
-                          <span style="background-color: {{ option.get_color }}; width: 20px; height: 20px; display: inline-block;"></span>
-                      {% endif %}
-                    </span>
-                  {% endfor %}
-                </span>
-              </div>
-            {% endfor %}
-          </section>
-
-            <button @click="addBasket" style="margin-top: 20px;">Додати до кошика</button>
-        </div>
-      </main>
-    </div>
-
     <script>
       document.addEventListener("alpine:init", () => {
         Alpine.data("Product", () => ({
           basket: Alpine.$persist([]).as("basket"),
+          buyButtonText:"У кошик",
+          isBuyButtonActive: false,
           product: {
             id: "{{ product.id }}",
             name: "{{ product.name }}",
@@ -120,6 +266,16 @@
             // Update total price
             this.updatePrice();
           },
+            editQuantity(action){
+              if (action === "plus") {
+                this.product.productQuantity++;
+              } else if (
+                action === "minus" &&
+                this.product.productQuantity > 1
+              ) {
+                this.product.productQuantity--;
+            }
+          },
           updatePrice() {
             const additionalPrice = this.product.activeOptions.reduce(
               (total, option) => total + option.additional_price,
@@ -128,7 +284,12 @@
             this.product.price = this.product.basePrice + additionalPrice;
           },
           addBasket() {
-            this.basket.push(this.product);
+            this.basket.push({
+              ...this.product,
+              "itemID": this.basket.length + 1
+            });
+            this.buyButtonText = "Додано";
+            this.isBuyButtonActive = true;
           },
           isOptionSelected(option_id) {
             return this.product.activeOptions.some(activeOption => activeOption.id === option_id);
@@ -136,5 +297,8 @@
         }));
       });
     </script>
-  </body>
+
+</body>
+
+
 </html>

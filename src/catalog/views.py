@@ -1,8 +1,10 @@
 from django.core.serializers import json
 from django.http import JsonResponse
 from django.views.generic import TemplateView, DetailView
+import json
 
-from .models import Product, Category, Order
+from .basket import calculate_total_price
+from .models import Product, Category, Order, OrderProductPart, OrderOptionsProductPart
 from .utils import send_telegram_message
 
 
@@ -37,10 +39,9 @@ class ProductDetailsView(DetailView):
 def basket(request):
     try:
         if request.method == "POST":
-            order_list = json.loads(request.body).get("order_list")
-
-
-            return JsonResponse({"status": "success", "data": order_list})
+            body = json.loads(request.body)
+            order_list = body.get("order_list")
+            return JsonResponse({"status": "success", "data": calculate_total_price(order_list)})
         else:
             return JsonResponse({"error": "Invalid request"}, status=400)
     except Exception as e:
@@ -55,36 +56,25 @@ def order_submit(request):
         city = data.get("city")
         post_office_id = data.get("postOfficeId")
         post_office = data.get("postOffice")
-        result = basket.calculate_basket(
-            data.get("order_list"), data.get("promocodeName")
-        )
         order_content = data.get("order_list")
+        result = calculate_total_price(order_content)
         full_price = result["sumPrice"]
         order = Order.objects.create(
             pib = pib,
             phone = phone,
             city = city,
             post_office_id = post_office_id,
-            post_office =post_office
+            post_office =post_office,
+            full_price = full_price
         )
-        """
-        order_content = [
-            catalog_models.OrderPart.objects.create(
-                related_order=order,
-                product=catalog_models.Product.objects.filter(
-                    id=item.get("productId")
-                ).first(),
-                count=item.get("productQuantity"),
-                volume=catalog_models.ProductVolume.objects.filter(
-                    id=item.get("volumeId")
-                ).first(),
-                wrapper=catalog_models.ProductWrapper.objects.filter(
-                    id=item.get("wrapperId")
-                ).first(),
+        for product in order_content:
+            obj = OrderProductPart.objects.create(
+                count = product["productQuantity"],
+                product_id = product["productId"],
+                related_order = order,
             )
-            for item in order_content
-        ]
-        """
+            options = [ OrderOptionsProductPart.objects.create(order_part = obj, option_id= option_id ) for option_id in  product["options"] ]
+
         send_telegram_message(order.get_telegram_text())
         return JsonResponse(
             {"status": "success"}

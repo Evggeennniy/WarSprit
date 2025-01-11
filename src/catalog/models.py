@@ -171,12 +171,11 @@ class OrderOptionsProductPart(models.Model):
         on_delete=models.CASCADE,
         related_name="order_items",
     )
-    group = models.ForeignKey(ProductOptionGroup, verbose_name="Група", on_delete=models.CASCADE, related_name="options_group_order"
-                              )
     option = models.ForeignKey(ProductOption, verbose_name="Група", on_delete=models.CASCADE, related_name="options_order"
                               )
     def __str__(self) -> str:
-        return f"{self.group.name}-{self.option.name}"
+        return f"{self.option.group.name}-{self.option.value}-{self.option.additional_price}₴" if self.option.additional_price else f"{self.option.group.name}-{self.option.value}"
+
 
     class Meta:
         verbose_name = "Обрана опція по продукту"

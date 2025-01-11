@@ -1,47 +1,177 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}"/>
-    <title>War</title>
-  </head>
-  <body>
-    <div class="page-wrap">
-      <main class="main">
-        <div class="main-wrap container">
-          <section class="main__content index">
-              <ul class="content__categories-list">
-                {% for category in categories %}
-                <li class="categories-list__item">
-                    <p class="categories-list__item-title">
-                      {{ category.name }}
-                    </p>
-                       {% for product in category.products.all %}
-                             <a
-                          class="product-link"
-                          href="{% url 'product' product.id %}"
-                        >
-                        <li class="categories-list__item">
-                            <p class="categories-list__item-title">
-                              {{ product.id }}
-                              {{ product.name }}
-                              {{ product.photo }}
-                              {{ product.price }}
-                                <p>Фото: <img src="{{ product.photo.url }}" alt="{{ product.name }}" /></p>
-                            </p>
 
-                        </li>
-                        </a>
-                        {% endfor %}
-                  </a>
-                </li>
-                {% endfor %}
-              </ul>
-        </section>
-           </div>
-      </main>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home</title>
+  <link rel="stylesheet" href="{% static 'css/index.css' %}">
+  <link rel="stylesheet" href="{% static 'css/main.css' %}">
+</head>
+
+<body>
+
+  <div class="container__header">
+    <div class="container__inner">
+      <nav class="navbar">
+        <div class="navbar__socials">
+          <a target="_blank" href="https://telegram.org">
+            <img src="{% static 'icon/tg.png' %}" alt="tg icon">
+          </a>
+          <a target="_blank" href="https://instagram.com">
+            <img src="{% static 'icon/instagram.png' %}" alt="instagram icon">
+          </a>
+          <p class="navbar__number">+380 (99) (071) (41) (07)</p>
+        </div>
+        <div class="navbar__logo">
+          <a href="{% url 'index' %}">
+            <img src="{% static 'icon/logo-nav.png' %}" alt="war spirit logo">
+          </a>
+        </div>
+        <div class="navbar__catalog">
+          <a class="navbar__cart" href="{% url 'basket' %}">
+            <img src="{% static 'icon/shopping-cart.png' %}" alt="shopping cart">
+            <p class="navbar__cart__text">кошик</p>
+          </a>
+          <a class="navbar__catalog__btn" href="{% url 'index' %}">
+            catalog
+          </a>
+          <a class="navbar__catalog__mini" href="{% url 'basket' %}">
+            <img src="{% static 'icon/shopping-cart.png' %}" alt="">
+          </a>
+        </div>
+      </nav>
     </div>
-  </body>
+  </div>
+
+  <div class="container__hero">
+    <div class="hero__container">
+      <img class="hero__text" src="{% static 'img/hero-text.png' %}" alt="">
+      <img class="hero__text__mini" src="{% static 'img/hero-text-mini.png' %}" alt="">
+    </div>
+  </div>
+
+  <div class="container__main">
+    <div class="container__inner">
+      <div class="main__wrapper__cards">
+        <div class="main__wrapper__card">
+          <img src="{% static 'icon/checkmark.png' %}" alt="">
+          <p class="card__title">Надійність і якість</p>
+          <p class="card__desc">Весь товар виготовляється з якісних матеріалів для довговічності та комфорту.</p>
+          <div class="card__dashed__line"></div>
+        </div>
+        <div class="main__wrapper__card">
+          <img src="{% static 'icon/gerb.png' %}" alt="">
+          <p class="card__title">Патріотичний дизайн</p>
+          <p class="card__desc">Унікальна символіка створює стильний вигляд, що підкреслює підтримку захисникам.</p>
+          <div class="card__dashed__line"></div>
+        </div>
+        <div class="main__wrapper__card">
+          <img src="{% static 'icon/hands.png' %}" alt="">
+          <p class="card__title"> Підтримка військових</p>
+          <p class="card__desc">Частина йде на допомогу армії та благодійні проекти, що надають цінності кожній покупці.
+          </p>
+          <div class="card__dashed__line"></div>
+        </div>
+      </div>
+
+{% for category in categories %}
+      <div class="main__wrapper__tshirts">
+        <div class="tshirts__upper">
+          <p class="tshirts__upper__text">{{ category.name }}</p>
+          <div class="tshirts__dashed__line"></div>
+          <div class="tshirts__arrows">
+            <button class="arrow__left">
+              <img src="{% static 'icon/arrow-left.png' %}" alt="">
+            </button>
+            <button class="arrow__right">
+              <img src="{% static 'icon/arrow-right.png' %}" alt="">
+            </button>
+          </div>
+        </div>
+
+        <div class="tshirts__cards">
+
+  {% for product in category.products.all %}
+         <a
+            class="product-link"
+            href="{% url 'product' product.id %}"
+         >
+            <div class="selling__card">
+              <img class="card__img" src="{{ product.photo.url }}" alt="{{ product.name }}">
+              <div class="card__info">
+                <p class="card__name"> {{ product.name }}</p>
+                <div class="card__buy">
+                  <button class="card__buy__btn">
+                    <img src="{% static 'icon/shopping-cart.png' %}" alt="">
+                    <p class="card__buy__text">купити</p>
+                  </button>
+                  <p class="card__price">{{ product.price }}₴</p>
+                </div>
+              </div>
+            </div>
+         </a>
+  {% endfor %}
+
+
+        </div>
+      </div>
+
+          <div class="container__main__help">
+      <div class="container__inner main__help__wrapper">
+        <div class="main__help__left">
+          <p class="main__help__title">Потрібна допомога з вибіром?</p>
+          <p class="main__help__desc">зв'яжіться з нами!</p>
+          <p class="main__help__title__mini">Потрібна допомога з <span class="span">вибіром</span>?</p>
+        </div>
+        <button class="main__help__btn">зв'язатись</button>
+      </div>
+    </div>
+
+{% endfor %}
+
+      </div>
+    </div>
+
+  <footer class="footer">
+    <div class="container__inner footer__container">
+      <div class="footer__left">
+        <a class="footer__link" target="_blank" href="https://instagram.com">
+          <p class="footer__instagram">instagram</p>
+        </a>
+        <a class="footer__link" target="_blank" href="https://telegram.org">
+          <p class="footer__tg">telegram</p>
+        </a>
+      </div>
+      <div class="footer__mid">
+        <a href="index.html">
+          <img src="{% static 'icon/logo-nav.png' %}" alt="">
+        </a>
+      </div>
+      <div class="footer__right">
+        <p class="footer__rights">&copy all data stolen by the site</p>
+      </div>
+
+      <div class="footer__mid__mini">
+        <a href="#">
+          <img src="{% static 'icon/logo-nav.png' %}" alt="">
+        </a>
+      </div>
+      <div class="footer__left__mini">
+        <a class="footer__link" href="#">
+          <p class="footer__instagram">instagram</p>
+        </a>
+        <a class="footer__link" href="#">
+          <p class="footer__tg">telegram</p>
+        </a>
+      </div>
+      <div class="footer__right__mini">
+        <p class="footer__rights">&copy all data stolen by the site</p>
+      </div>
+    </div>
+  </footer>
+
+</body>
+
 </html>

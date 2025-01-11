@@ -1,8 +1,9 @@
 from django.contrib import admin
 from django.forms import TextInput
+from django.utils.safestring import mark_safe
 
 from .models import Category, ProductImage, ProductOption, Product, OrderProductPart, Order, Color, \
-    ProductOptionGroup
+    ProductOptionGroup, OrderOptionsProductPart
 
 
 @admin.register(Category)
@@ -50,10 +51,36 @@ class ProductsAdmin(admin.ModelAdmin):
     readonly_fields = ()
 
 
+class OrderOptionPartInline(admin.TabularInline):
+    model = OrderOptionsProductPart
+    extra = 1
+
+
+@admin.register(OrderProductPart)
+class OrderPartAdmin(admin.ModelAdmin):
+    inlines = [OrderOptionPartInline]
+
+
+
 # Order and OrderPart Models Configuration
 class OrderPartInline(admin.TabularInline):
     model = OrderProductPart
     extra = 1
+
+    def render_options(self, obj):
+        options = obj.options_order.all()
+        if not options:
+            return "No options available"
+            # Формуємо HTML список
+        options_list = "<ul>"
+        for option in options:
+            options_list += f"<li>fff{str(option)}</li>"
+        options_list += "</ul>"
+        return mark_safe(options_list)
+
+    readonly_fields = ('render_options',)
+    fields = ('render_options', 'product', 'count')
+    render_options.short_description = "Order Options"
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):

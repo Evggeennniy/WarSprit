@@ -205,3 +205,5 @@ CKEDITOR_5_CONFIGS = {
         "language": "uk",
     }
 }
+
+DISCOUNT = 150
