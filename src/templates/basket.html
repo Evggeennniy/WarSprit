@@ -5,7 +5,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shopping Cart</title>
+  <title>Кошик</title>
   <link rel="stylesheet" href="{% static 'css/index.css' %}">
   <link rel="stylesheet" href="{% static 'css/basket.css' %}">
       <script
@@ -24,55 +24,19 @@
 </head>
 
 <body>
-
-  <div class="container__header">
-    <div class="header__wrapper">
-      <div class="container__inner">
-        <nav class="navbar">
-          <div class="navbar__socials">
-            <a target="_blank" href="https://telegram.org">
-              <img src="{% static 'icon/tg.png' %}" alt="tg icon">
-            </a>
-            <a target="_blank" href="https://instagram.com">
-              <img src="{% static 'icon/instagram.png' %}" alt="instagram icon">
-            </a>
-            <p class="navbar__number">+380 (99) (071) (41) (07)</p>
-          </div>
-          <div class="navbar__logo">
-            <a href="{% url 'index' %}">
-              <img src="{% static 'icon/logo-nav.png' %}" alt="war spirit logo">
-            </a>
-          </div>
-          <div class="navbar__catalog">
-            <a class="navbar__cart" href="{% url 'basket' %}">
-              <img src="{% static 'icon/shopping-cart.png' %}" alt="shopping cart">
-              <p class="navbar__cart__text">кошик</p>
-            </a>
-            <a class="navbar__catalog__btn" href="{% url 'index' %}">
-              catalog
-            </a>
-            <a class="navbar__catalog__mini" href="{% url 'basket' %}">
-              <img src="{% static 'icon/shopping-cart.png' %}" alt="">
-            </a>
-          </div>
-        </nav>
-      </div>
-    </div>
-    <div class="break__line"></div>
-  </div>
-
+ {% include 'elements/header.html' %}
   <div class="container__inner container__wrapper"  x-data="basketStore">
     <div class="container__cart">
       <p class="cart__text">головна / кошик</p>
       <div class="cart__content">
         <div class="cart__cards">
           <template x-for="(item, index) in items" :key="item.itemID">
-          <div class="cart__card">
+          <div class="cart__card"  @click.stop="window.location.href = '/product/' + item.id">
             <img :src="item.photo" alt="">
             <div class="card__info">
               <p class="card__name" x-text="item.name"></p>
                <template x-for="(option, index) in item.activeOptions" :key="option.group_id">
-              <p class="card__size"><span x-text="option.group_name"></span>: <span x-text="option.value"></span></p>
+              <p class="card__size"><span x-text="option.group_name"></span>: <span x-html="option.value"></span></p>
                </template>
               <div class="card__price__quantity">
                 <p class="card__price"><span x-text="item.price"></span>₴</p>
@@ -133,10 +97,13 @@
             <input placeholder="ПІБ" class="contact__input contact__name" type="text" x-model="order.pib">
             <div class="contact__inputs__mid">
               <input placeholder="Номер телефону" class="contact__input contact__phonenumber" type="text" x-model="order.phone" x-mask="-99 99 99 99 999">
+              <input placeholder="Місто" class="contact__input contact__city__mini" type="text"  x-model="order.city">
               <input placeholder="№ відділення" class="contact__input contact__branch__number" type="text" x-model="order.postOfficeId">
             </div>
             <div class="contact__inputs__footer">
               <input placeholder="Виберіть пошту" class="contact__input contact__mail" type="text" x-model="order.postOffice">
+              <input placeholder="Пошта" class="contact__input contact__mail__mini" type="text"  x-model="order.postOffice">
+              <input placeholder="№ відділення" class="contact__input contact__branch__number__mini" type="text" x-model="order.postOfficeId">
               <input placeholder="Місто" class="contact__input contact__city" type="text" x-model="order.city">
             </div>
           </div>
@@ -297,7 +264,10 @@
             })
               .then((response) => response.json())
               .then((data) => {
+                const modalCloseBtn = document.getElementById("contact-form-close-btn");
                 this.items = [];
+                alert("Дякуємо за замовлення !!")
+                window.location.href = "{% url 'index' %}";
               })
               .catch((error) => {
                 console.error("Error sending basket:", error);

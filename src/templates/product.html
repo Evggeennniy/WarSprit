@@ -15,42 +15,7 @@
 </head>
 
 <body>
-
-  <div class="container__header">
-    <div class="header__wrapper">
-      <div class="container__inner">
-        <nav class="navbar">
-          <div class="navbar__socials">
-            <a target="_blank" href="https://telegram.org">
-              <img src="{% static 'icon/tg.png' %}" alt="tg icon">
-            </a>
-            <a target="_blank" href="https://instagram.com">
-              <img src="{% static 'icon/instagram.png' %}" alt="instagram icon">
-            </a>
-            <p class="navbar__number">+380 (99) (071) (41) (07)</p>
-          </div>
-          <div class="navbar__logo">
-            <a href="index.html">
-              <img src="{% static 'icon/logo-nav.png' %}" alt="war spirit logo">
-            </a>
-          </div>
-          <div class="navbar__catalog">
-            <a class="navbar__cart" href="{% url 'basket' %}">
-              <img src="{% static 'icon/shopping-cart.png' %}" alt="shopping cart">
-              <p class="navbar__cart__text">кошик</p>
-            </a>
-            <a class="navbar__catalog__btn" href="{% url 'index' %}">
-              catalog
-            </a>
-            <a class="navbar__catalog__mini" href="{% url 'basket' %}">
-              <img src="{% static 'icon/shopping-cart.png' %}" alt="">
-            </a>
-          </div>
-        </nav>
-      </div>
-    </div>
-    <div class="break__line"></div>
-  </div>
+{% include 'elements/header.html' %}
 
   <div class="container__inner container__main" x-data="Product">
     <p class="main__title">головна / товар</p>
@@ -120,7 +85,7 @@
           </div>
         </div>
         <div class="product__more__container">
-          <a target="_blank" class="product__more__link" href="https://instagram.com">
+          <a target="_blank" class="product__more__link" href="https://www.instagram.com/warrior_spir1t/profilecard/?igsh=YWV4dTl2MHdzY28w">
             <p class="product__more__about">Детальніше о товару</p>
             <img src="{% static 'icon/instagram.png' %}" alt="">
           </a>
@@ -290,6 +255,10 @@
             });
             this.buyButtonText = "Додано";
             this.isBuyButtonActive = true;
+            setTimeout(() => {
+              this.buyButtonText = "У кошик";
+              this.isBuyButtonActive = false;
+            }, 2000);
           },
           isOptionSelected(option_id) {
             return this.product.activeOptions.some(activeOption => activeOption.id === option_id);

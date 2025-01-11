@@ -1,9 +1,13 @@
 from django.contrib import admin
 from django.forms import TextInput
-from django.utils.safestring import mark_safe
 
 from .models import Category, ProductImage, ProductOption, Product, OrderProductPart, Order, Color, \
     ProductOptionGroup, OrderOptionsProductPart
+
+
+class ProductInline(admin.TabularInline):
+    model = Product
+    extra = 0
 
 
 @admin.register(Category)
@@ -13,16 +17,19 @@ class CategoriesAdmin(admin.ModelAdmin):
     search_fields = ("id", "name")
 
     readonly_fields = ()
+    inlines = [
+        ProductInline,
+    ]
 
 
 
 class ProductImageInline(admin.TabularInline):
     model = ProductImage
-    extra = 1
+    extra = 0
 
 @admin.register(Color)
 class ColorAdmin(admin.ModelAdmin):
-    list_display = ("name", "color")
+    list_display = ("colored_name",)
 
     def formfield_for_dbfield(self, db_field, **kwargs):
         if db_field.name == "color":
@@ -35,7 +42,7 @@ class ProductOptionGroupAdmin(admin.ModelAdmin):
 
 @admin.register(ProductOption)
 class ProductOptionAdmin(admin.ModelAdmin):
-    list_display = ("group", "value")
+    list_display = ("group", "format_html_value")
 
 
 @admin.register(Product)
@@ -44,16 +51,18 @@ class ProductsAdmin(admin.ModelAdmin):
         ProductImageInline,
     ]
 
-    list_display = ("name", "category", "price")
+    list_display = ("name", "category", "price", "view_count", "purchase_count",)
 
-    search_fields = ("id", "name","category__name")
+    search_fields = ("id", "name","category__name",)
 
-    readonly_fields = ()
+    readonly_fields = ("view_count", "purchase_count",)
+
+    ordering = ("view_count", "purchase_count", "price")
 
 
 class OrderOptionPartInline(admin.TabularInline):
     model = OrderOptionsProductPart
-    extra = 1
+    extra = 0
 
 
 @admin.register(OrderProductPart)
@@ -65,9 +74,11 @@ class OrderPartAdmin(admin.ModelAdmin):
 # Order and OrderPart Models Configuration
 class OrderPartInline(admin.TabularInline):
     model = OrderProductPart
-    extra = 1
+    extra = 0
+    empty_value_display = "-empty-"
 
-    def render_options(self, obj):
+    @admin.display(description="Опцій")
+    def view_options(self, obj):
         options = obj.options_order.all()
         if not options:
             return "No options available"
@@ -76,11 +87,11 @@ class OrderPartInline(admin.TabularInline):
         for option in options:
             options_list += f"<li>fff{str(option)}</li>"
         options_list += "</ul>"
-        return mark_safe(options_list)
+        return options_list
 
-    readonly_fields = ('render_options',)
-    fields = ('render_options', 'product', 'count')
-    render_options.short_description = "Order Options"
+    list_display = ("view_options", 'product', 'count')
+    readonly_fields = ('view_options',)
+    fields = ('view_options', 'product', 'count',)
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):

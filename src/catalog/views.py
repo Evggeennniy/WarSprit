@@ -36,6 +36,12 @@ class ProductDetailsView(DetailView):
             'options__group',
         )
 
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.increment_view_count()
+        return super().get(request, *args, **kwargs)
+
+
 def basket(request):
     try:
         if request.method == "POST":

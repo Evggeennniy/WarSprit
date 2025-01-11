@@ -112,7 +112,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "Europe/Kyiv"
 
 USE_I18N = True
 
@@ -122,7 +122,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 # Директорія для збереження зібраних статичних файлів (для продакшну)
 STATIC_ROOT = BASE_DIR / 'staticfiles'
@@ -139,6 +139,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
+
+LOCALE_PATHS = [
+    BASE_DIR / "locale/",
+]
+MODELTRANSLATION_CUSTOM_FIELDS = "CKEditor5Field"
 
 CKEDITOR_5_CONFIGS = {
     "default": {
@@ -205,5 +210,6 @@ CKEDITOR_5_CONFIGS = {
         "language": "uk",
     }
 }
+
 
 DISCOUNT = 150

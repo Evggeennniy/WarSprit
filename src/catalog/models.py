@@ -1,6 +1,9 @@
+from django.contrib import admin
 from django.db import models
-from django_ckeditor_5.fields import CKEditor5Field
+from django.utils.html import format_html
 from colorfield.fields import ColorField
+from django_ckeditor_5.fields import CKEditor5Field
+
 
 class Category(models.Model):
     name = models.CharField(verbose_name="Назва", max_length=16)
@@ -30,6 +33,14 @@ class Color(models.Model):
     def __str__(self):
         return self.name
 
+    @admin.display(ordering="name")
+    def colored_name(self):
+        return format_html(
+            '<span style="color: {};">{}</span>',
+            self.color,
+            self.name,
+        )
+
     class Meta:
         verbose_name = "Колір опцiй"
         verbose_name_plural = "Коліри опцiй"
@@ -43,7 +54,7 @@ class ProductOption(models.Model):
 
     additional_price = models.IntegerField(verbose_name="Додаткова вартість", default=0)
     value = CKEditor5Field(
-        verbose_name="Назва опцій", config_name="default", max_length=100
+        verbose_name="Назва опцій", max_length=100, config_name="default"
     )
 
     def get_group(self):
@@ -53,7 +64,9 @@ class ProductOption(models.Model):
         if self.color:
             return self.color.color  # type: ignore
 
-
+    @admin.display(ordering="value")
+    def format_html_value(self):
+        return format_html(self.value)
 
     def __str__(self) -> str:
         return  f"{self.group.name}-{self.value}-{self.additional_price}₴" if self.additional_price else f"{self.group.name}-{self.value}"
@@ -65,9 +78,7 @@ class ProductOption(models.Model):
 
 class Product(models.Model):
     name = models.CharField(verbose_name="Назва", max_length=64)
-    description = CKEditor5Field(
-        verbose_name="Опис", config_name="default", max_length=2048
-    )
+    description = models.TextField(verbose_name="Опис")
     options = models.ManyToManyField(ProductOption, related_name="products", blank=True)
     category = models.ForeignKey(
         verbose_name="Категорiя",
@@ -75,11 +86,15 @@ class Product(models.Model):
         on_delete=models.CASCADE,
         related_name="products",
     )
-    included_in_block_buy= models.BooleanField(
-        verbose_name="Включений у `З цим купують`", default=False
-    )
     photo = models.ImageField(verbose_name="Головне фото", upload_to="images")
-    price = models.IntegerField(verbose_name="Цiна")
+    price = models.PositiveIntegerField(verbose_name="Цiна")
+    purchase_count = models.PositiveIntegerField(
+        verbose_name="Кількість покупок", default=0
+    )
+
+    view_count = models.PositiveIntegerField(
+        verbose_name="Кількість переглядів", default=0
+    )
 
     def __str__(self) -> str:
         return self.name
@@ -90,6 +105,11 @@ class Product(models.Model):
 
     def get_telegram_text(self):
         return self.name
+
+    def increment_view_count(self):
+        """Збільшити кількість переглядів на 1."""
+        self.view_count += 1
+        self.save(update_fields=["view_count"])
 
 
 class ProductImage(models.Model):
@@ -162,6 +182,15 @@ class OrderProductPart(models.Model):
         Формує красивий текст для однієї частини замовлення.
         """
         return ""
+
+    def save(self, *args, **kwargs):
+        """
+        Перевизначення методу save для автоматичного оновлення purchase_count.
+        """
+        if self.pk is None and self.product:  # Перевіряємо, чи це новий запис
+            self.product.purchase_count += self.count
+            self.product.save(update_fields=["purchase_count"])
+        super().save(*args, **kwargs)
 
 
 class OrderOptionsProductPart(models.Model):
