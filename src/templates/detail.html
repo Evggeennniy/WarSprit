@@ -34,12 +34,12 @@
           <div class="product__name">
             <p class="product__name__text">{{ product.name }}</p>
             <div class="product__inspect__btns">
-              <button class="product__inspect__btn">
+              <a class="product__inspect__btn" href="{% url 'detail' next_product_id %}">
                 <img src="{% static 'icon/arrow-left.png' %}" alt="">
-              </button>
-              <button class="product__inspect__btn">
+              </a>
+              <a class="product__inspect__btn" href="{% url 'detail' previous_product_id %}">
                 <img src="{% static 'icon/arrow-right.png' %}" alt="">
-              </button>
+              </a>
             </div>
           </div>
           <p class="product__price" > <span x-text="product.price"></span>₴</p>
@@ -106,7 +106,7 @@
 
       <div class="hoodies__cards">
         {% for product in top_products %}
-        {% include 'elements/productCard.html' %}
+        {% include 'elements/product.html' %}
       {% endfor %}
 
 

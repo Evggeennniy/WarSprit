@@ -39,7 +39,7 @@
               <p class="card__size"><span x-text="option.group_name"></span>: <span x-html="option.value"></span></p>
                </template>
               <div class="card__price__quantity">
-                <p class="card__price"><span x-text="item.price"></span>₴</p>
+                <p class="card__price"><span x-text="item.price*item.productQuantity"></span>₴</p>
                 <div class="card__quantity__container">
                   <button class="quantity__btn" @click.stop="editQuantity(index, 'minus', item.itemID)">
                     <img src="{% static 'icon/minus.png' %}" alt="">

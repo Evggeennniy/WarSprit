@@ -25,20 +25,36 @@ class IndexView(TemplateView):
 
 class ProductDetailsView(DetailView):
     model = Product
-    template_name = "product.html"
+    template_name = "detail.html"
     context_object_name = "product"
 
-    def get_queryset(self):
-        return Product.objects.prefetch_related(
-            'images',
-            'options',
-            'options__color',
-            'options__group',
-        )
-
     def get_top_products(self):
-        """Метод для отримання 4 найбільш покупних товарів"""
+        """Метод для отримання 4 найбільш покупних товарів."""
         return Product.objects.order_by('-purchase_count')[:4]
+
+    def get_surrounding_products(self, current_product):
+        """Знайти попередній та наступний продукт за категорією з циклічним переходом."""
+        category = current_product.category
+
+        # Усі продукти в категорії, відсортовані за кількістю переглядів
+        products_in_category = Product.objects.filter(category=category).order_by('-view_count', '-pk')
+
+        # Якщо категорія порожня, повертаємо None
+        if not products_in_category.exists():
+            return None, None
+
+        # Перетворюємо QuerySet на список
+        products = list(products_in_category)
+
+        # Знаходимо індекс поточного продукту
+        current_index = next((i for i, product in enumerate(products) if product.pk == current_product.pk), None)
+
+        # Визначаємо попередній та наступний продукти (циклічно)
+        previous_product = products[current_index - 1] if current_index > 0 else products[-1]
+        next_product = products[current_index + 1] if current_index < len(products) - 1 else products[0]
+
+        # Повертаємо їхні ID
+        return previous_product.pk, next_product.pk
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -47,8 +63,13 @@ class ProductDetailsView(DetailView):
         # Отримати топ-4 продукти через окремий метод
         top_products = self.get_top_products()
 
+        # Отримати попередній і наступний продукти (тільки ID)
+        previous_product_id, next_product_id = self.get_surrounding_products(self.object)
+
         context = self.get_context_data(object=self.object)
         context['top_products'] = top_products
+        context['previous_product_id'] = previous_product_id
+        context['next_product_id'] = next_product_id
 
         return self.render_to_response(context)
 

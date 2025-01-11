@@ -65,8 +65,8 @@
         </div>
         <div x-ref="carousel" class="tshirts__cards carousel" >
 
-      {% for product in category.products.all %}
-        {% include 'elements/productCard.html' %}
+      {% for product in category.products.all|dictsort:"view_count" %}
+        {% include 'elements/product.html' %}
       {% endfor %}
 
         </div>
