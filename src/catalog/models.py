@@ -1,9 +1,11 @@
 from django.contrib import admin
 from django.db import models
+from django.urls import reverse
 from django.utils.html import format_html
 from colorfield.fields import ColorField
 from django.utils.safestring import mark_safe
 from django_ckeditor_5.fields import CKEditor5Field
+from .icon import LINK_EDIT_ICON
 
 
 class Category(models.Model):
@@ -171,6 +173,9 @@ class Order(models.Model):
         verbose_name = "Замовлення"
         verbose_name_plural = "Замовлення"
 
+    def __str__(self) -> str:
+        return f"№{self.id} {self.pib}"
+
     def get_telegram_text(self):
         order_parts = self.order_items.all()
         parts_text = "\n".join([part.get_telegram_text() for part in order_parts])
@@ -208,18 +213,28 @@ class OrderProductPart(models.Model):
         Формує красивий текст для однієї частини замовлення.
         """
         return ""
+    @admin.display(description="фото")
+    def mini_photo(self):
+        return self.product.mini_photo()
+
 
     @admin.display(description="Опцій ")
-    def option_text(self):
-        options = self.option_items
-        if not options:
+    def product_option(self):
+        option_items = self.option_items.all()
+        if not option_items:
             return "No options available"
             # Формуємо HTML список
-        options_list = "<ul>"
-        for option in options:
-            options_list += f"<li>fff{str(option)}</li>"
-        options_list += "</ul>"
-        return options
+        options_list=""
+        for item in option_items:
+            options_list += item.colored_name()
+        return mark_safe(options_list)
+
+    @admin.display(description="Детальніше")
+    def admin_link_icon(self):
+        """Додає іконку зі посиланням на редагування об’єкта."""
+        url = reverse('admin:catalog_orderproductpart_change', args=[self.pk])
+        return format_html(
+            LINK_EDIT_ICON,url)
 
     def save(self, *args, **kwargs):
         """
@@ -238,15 +253,20 @@ class OrderOptionsProductPart(models.Model):
         on_delete=models.CASCADE,
         related_name="option_items",
     )
-    option = models.ForeignKey(ProductOption, verbose_name="Група", on_delete=models.CASCADE, related_name="options_order"
+    option = models.ForeignKey(ProductOption, verbose_name="Опція", on_delete=models.CASCADE, related_name="options_order"
                               )
     def __str__(self) -> str:
         return f"{self.option.group.name}-{self.option.value}-{self.option.additional_price}₴" if self.option.additional_price else f"{self.option.group.name}-{self.option.value}"
 
+    def colored_name(self):
+        if self.option.color:
+            return f'<span style="color: {self.option.color.color}">{self.option.value}</span>'
+        return self.option.value
+
 
     class Meta:
-        verbose_name = "Обрана опція по продукту"
-        verbose_name_plural = "Подробицi замовлень"
+        verbose_name = "Опція по товару"
+        verbose_name_plural = "Опцій по товару"
 
     def get_telegram_text(self):
         """
