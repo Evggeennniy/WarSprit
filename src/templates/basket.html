@@ -112,7 +112,7 @@
               <input placeholder="Місто" class="contact__input contact__city" type="text" x-model="order.city">
             </div>
           </div>
-          <button class="contact__send__btn" @click.prevent="sendOrder">підтвердити</button>
+          <button class="contact__send__btn" :disabled="isDisabledOrder" @click.prevent="sendOrder">підтвердити</button>
         </div>
       </div>
     </div>
@@ -126,6 +126,7 @@
             sumDiscountProduct: 0,
             sumPrice: 0,
           },
+          isDisabledOrder: false,
           order: {
             pib: Alpine.$persist("").as("pib"),
             phone: Alpine.$persist("").as("phone"),
@@ -249,6 +250,7 @@
               });
           },
           sendOrder() {
+            this.isDisabledOrder=true;
             const errMess = this.validateOrder();
             if (errMess) {
               alert(errMess);
@@ -269,12 +271,14 @@
             })
               .then((response) => response.json())
               .then((data) => {
+                this.isDisabledOrder=false;
                 const modalCloseBtn = document.getElementById("contact-form-close-btn");
                 this.items = [];
                 alert("Дякуємо за замовлення !!")
                 window.location.href = "{% url 'index' %}";
               })
               .catch((error) => {
+                this.isDisabledOrder=false;
                 console.error("Error sending basket:", error);
               });
           },

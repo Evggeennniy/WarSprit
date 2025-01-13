@@ -181,14 +181,14 @@ class Order(models.Model):
         parts_text = "\n".join([part.get_telegram_text() for part in order_parts])
 
         return (
-            f"Дата та час замовлення: {self.datetime.strftime('%Y-%m-%d %H:%M:%S')}\n\n"
+            f"📌Дата та час замовлення: {self.datetime.strftime('%Y-%m-%d %H:%M:%S')}\n\n"
             f"🛒 Замовлення №{self.id} від {self.pib}:\n"
-            f"Номер телефону: +{self.phone}\n"
-            f"Місто: {self.city}\n"
-            f"Пошта: {self.post_office}/{self.post_office_id}\n"
-            "📦 Товари:\n\n"
-            f"{parts_text}"
-            f"Всього: {self.full_price} ₴\n"
+            f"📞Номер телефону: +{self.phone}\n"
+            f"🏢Місто: {self.city}\n"
+            f"📦Пошта: {self.post_office}/{self.post_office_id}\n"
+            "🛍Товари:\n\n"
+            f"{parts_text}\n"
+            f"💰Усього: {self.full_price} ₴\n"
         )
 
 
@@ -212,7 +212,26 @@ class OrderProductPart(models.Model):
         """
         Формує красивий текст для однієї частини замовлення.
         """
-        return ""
+
+        option_items = self.option_items.all().order_by("option__group__id")
+        elements = ["🔹", "🔸"]
+        options_list = ""
+        price= self.product.price
+        element_index = 0
+        for item in option_items:
+            elem = elements[element_index % len(elements)]
+            options_list += f"{elem}{item.get_telegram_text()}"
+            price += item.option.additional_price
+            element_index += 1
+        price_text = f"{price}₴;"
+        if self.count !=1:
+            price_text = f"{self.count}шт.*{price}₴={self.count*price}₴"
+        return (
+            f"👕{self.product.name}\n"
+            f"{options_list}"
+            f"💵Ціна: {price_text}\n"
+        )
+
     @admin.display(description="фото")
     def mini_photo(self):
         return self.product.mini_photo()
@@ -256,7 +275,7 @@ class OrderOptionsProductPart(models.Model):
     option = models.ForeignKey(ProductOption, verbose_name="Опція", on_delete=models.CASCADE, related_name="options_order"
                               )
     def __str__(self) -> str:
-        return f"{self.option.group.name}-{self.option.value}-{self.option.additional_price}₴" if self.option.additional_price else f"{self.option.group.name}-{self.option.value}"
+        return f"-{self.option.group.name}-{self.option.value} (+{self.option.additional_price}₴)" if self.option.additional_price else f"-{self.option.group.name}-{self.option.value}"
 
     def colored_name(self):
         if self.option.color:
@@ -269,8 +288,4 @@ class OrderOptionsProductPart(models.Model):
         verbose_name_plural = "Опцій по товару"
 
     def get_telegram_text(self):
-        """
-        Формує красивий текст для однієї частини замовлення.
-        """
-
-        return ""
+        return f"{self.option.group.name}: {self.option.value}:{self.option.additional_price}₴\n" if self.option.additional_price else f"{self.option.group.name}:{self.option.value}\n"
