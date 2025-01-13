@@ -181,11 +181,11 @@ class Order(models.Model):
         parts_text = "\n".join([part.get_telegram_text() for part in order_parts])
 
         return (
-            f"📌Дата та час замовлення: {self.datetime.strftime('%Y-%m-%d %H:%M:%S')}\n\n"
+            f"📌№{self.id}|Дата та час замовлення: {self.datetime.strftime('%Y-%m-%d %H:%M:%S')}\n\n"
             f"🛒 Замовлення №{self.id} від {self.pib}:\n"
             f"📞Номер телефону: +{self.phone}\n"
             f"🏢Місто: {self.city}\n"
-            f"📦Пошта: {self.post_office}/{self.post_office_id}\n"
+            f"📦Пошта: {self.post_office}|{self.post_office_id}\n"
             "🛍Товари:\n\n"
             f"{parts_text}\n"
             f"💰Усього: {self.full_price} ₴\n"
@@ -227,7 +227,7 @@ class OrderProductPart(models.Model):
         if self.count !=1:
             price_text = f"{self.count}шт.*{price}₴={self.count*price}₴"
         return (
-            f"👕{self.product.name}\n"
+            f"👕{self.product.id}|{self.product.name}\n"
             f"{options_list}"
             f"💵Ціна: {price_text}\n"
         )
