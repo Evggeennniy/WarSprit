@@ -4,7 +4,9 @@
     href="{% url 'detail' product.id %}"
  >
     <div class="selling__card">
-      <img class="card__img" src="{{ product.photo.url }}" alt="{{ product.name }}">
+      <div class="card__img__container">
+        <img class="card__img" src="{{ product.photo.url }}" alt="{{ product.name }}">
+      </div>
       <div class="card__info">
         <p class="card__name"> {{ product.name }}</p>
         <div class="card__buy">

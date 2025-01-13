@@ -31,13 +31,18 @@
       <div class="cart__content">
         <div class="cart__cards">
           <template x-for="(item, index) in items" :key="item.itemID">
-          <div class="cart__card"  @click.stop="window.location.href = '/product/' + item.id">
-            <img :src="item.photo" alt="">
+            <div class="cart__card"  @click.stop="window.location.href = '/product/' + item.id">
+            <div class="cart__img__container">
+              <img class="cart__img" :src="item.photo" alt="">
+
+            </div>
             <div class="card__info">
               <p class="card__name" x-text="item.name"></p>
-               <template x-for="(option, index) in item.activeOptions" :key="option.group_id">
-              <p class="card__size"><span x-text="option.group_name"></span>: <span x-html="option.value"></span></p>
+              <div class="card__size__color">
+                <template x-for="(option, index) in item.activeOptions" :key="option.group_id">
+                  <p class="card__size"><span x-text="option.group_name"></span>: <span class="card__span" x-html="option.value"></span></p>
                </template>
+              </div>
               <div class="card__price__quantity">
                 <p class="card__price"><span x-text="item.price*item.productQuantity"></span>₴</p>
                 <div class="card__quantity__container">
@@ -51,9 +56,9 @@
                 </div>
               </div>
             </div>
-          </div>
-         <div class="dashed__line"></div>
-         </template>
+            </div>
+            <div class="dashed__line"></div>
+          </template>
         </div>
         <div class="break__line__vr"></div>
         <div class="break__line__hr"></div>

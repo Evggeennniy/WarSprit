@@ -1,13 +1,14 @@
 .break__line {
   border-top: 1px solid #535252;
   height: 1px;
+  width: 100%;
 }
 
 .break__line__hr {
   display: none;
 }
 
-.header__wrapper {
+.container__header {
   background-color: var(--clr-blackish);
   height: 6rem;
   display: flex;
@@ -234,16 +235,28 @@
   flex-direction: column;
   gap: 1.5rem;
   flex: 6;
+  margin-bottom: 5rem;
 }
 
 .cart__card {
   display: flex;
   gap: 2rem;
+  height: 10rem;
+}
+
+.cart__img__container {
+  flex: 1;
+  height: 100%;
+}
+
+.cart__img {
+  width: 100%;
+  height: 100%;
 }
 
 .card__info {
   display: flex;
-  justify-content: center;
+  flex: 4;
   flex-direction: column;
   width: 100%;
 }
@@ -253,9 +266,32 @@
   font-size: 1.4rem;
 }
 
+.card__span {
+  display: flex;
+}
+
+.card__span h1,
+.card__span p,
+.card__span h2,
+.card__span h3 {
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.card__size__color {
+  display: flex;
+  flex-direction: column;
+  overflow: scroll;
+  gap: 0;
+}
+
 .card__size {
   color: rgba(255, 255, 255, 70%);
   font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  overflow-wrap: anywhere;
+  gap: 0.5rem;
 }
 
 .card__price {
@@ -267,7 +303,8 @@
 .card__price__quantity {
   display: flex;
   justify-content: space-between;
-  margin-top: 0.5rem;
+  margin-top: auto;
+  justify-self: flex-end;
 }
 
 .card__quantity__container {
@@ -480,6 +517,14 @@
 
 @media (max-width: 640px) {
 
+  .cart__card {
+    height: 8rem;
+  }
+
+  .cart__img__container {
+    flex: 2;
+  }
+
   .contact__form__title {
     font-size: 1.3rem;
   }
@@ -510,5 +555,11 @@
 
   .card__quantity {
     font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 430px) {
+  .cart__card {
+    gap: 1rem;
   }
 }

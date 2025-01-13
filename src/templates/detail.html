@@ -22,7 +22,7 @@
     <p class="main__title__mini">кошик</p>
     <div class="product__content">
       <div class="product__images">
-        <img src="{{ product.photo.url }}" class="thumbnail" alt="">
+        <img src="{{ product.photo.url }}" class="thumbnail product__main__img" alt="">
         <div class="product__showcase">
           {% for image in product.images.all %}
           <img src="{{ image.image.url }}" class="thumbnail" alt="">

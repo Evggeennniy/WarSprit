@@ -222,18 +222,30 @@
 .selling__card {
   display: flex;
   justify-content: center;
+  height: 30rem;
+  min-width: 20rem;
+  max-width: 20rem;
   flex-direction: column;
-  min-width: 23rem;
-  height: 100%;
   overflow: hidden;
   background-color: var(--clr-blackish);
   box-shadow: 0 0.5rem 2.5rem -0.75rem #000;
 }
 
+.card__img__container {
+  width: 100%;
+  height:100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-color: #000;
+}
+
 .card__img {
   width: 100%;
   height: 100%;
-  display: block;
+  object-fit: cover;
+  object-position: center;
 }
 
 .card__info {
@@ -450,6 +462,8 @@
   .selling__card {
     max-width: 15rem;
     min-width: 15rem;
+    max-height: 25rem;
+    min-height: 25rem;
   }
 
   .footer {
