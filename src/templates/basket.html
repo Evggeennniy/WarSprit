@@ -30,7 +30,7 @@
       <p class="cart__text">головна / кошик</p>
       <div class="cart__content">
         <div class="cart__cards">
-          <template x-for="(item, index) in items" :key="item.itemID">
+          <template class="cart__template" x-for="(item, index) in items" :key="item.itemID">
             <div class="cart__card"  @click.stop="window.location.href = '/product/' + item.id">
             <div class="cart__img__container">
               <img class="cart__img" :src="item.photo" alt="">
@@ -57,7 +57,7 @@
               </div>
             </div>
             </div>
-            <div class="dashed__line"></div>
+            <div class="dashed__line__product"></div>
           </template>
         </div>
         <div class="break__line__vr"></div>

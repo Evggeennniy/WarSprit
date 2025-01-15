@@ -207,6 +207,9 @@
   display: flex;
   align-items: center;
   gap: 1.5rem;
+  overflow: scroll;
+  flex-wrap: wrap;
+  height: 4.5rem;
 }
 
 .product__info__color {
@@ -255,6 +258,8 @@
   display: flex;
   align-items: center;
   user-select: none;
+  height: 100%;
+  min-width: max-content;
 }
 
 .product__info__size {
