@@ -52,40 +52,26 @@
         </div>
         <div class="dashed__line"></div>
         <div class="product__info__size">
+          {% regroup product.options.all|dictsort:"group.id" by group.id as grouped_options %}
+          {% for group in grouped_options %}
           <div class="product__info__size__container">
-            <button class="product__info__select__size" name="product__info__select__size" value="options">
-              розмір
+            <button class="product__info__select__color" name="product__info__select__color" value="options" @click.stop="addOptionSelect({{ group.grouper }})" >
+               <span class="card__span" x-html="activeOption.n{{ group.grouper }}.value"></span>
+                <span x-show="activeOption.n{{ group.grouper }}.additional_price" x-text="activeOption.n{{ group.grouper }}.additional_price"></span>
+              <div class="color" x-show="getShowColor({{ group.grouper }})" :style="{ 'background-color': activeOption.n{{ group.grouper }}.color }" ></div>
             </button>
-            <div class="product__info__options__size">
-              <p class="product__info__option">XL</p>
-              <p class="product__info__option">XS</p>
-              <p class="product__info__option">L</p>
-              <p class="product__info__option">S</p>
+            <div class="product__info__options__color" :class="{ 'product__active': isOptionSelected({{ group.grouper }})}">
+              {% for option in group.list %}
+              <div class="product__info__option" @click.stop="toggleOption({{ group.grouper }},{{ option.id }})">
+             {% if option.color %}
+                  <div class="color" style="background-color: {{ option.get_color }}"></div>
+              {% endif %}
+                <p>{{ option.value|safe }} {% if option.additional_price %} - {{ option.additional_price }}₴ {% endif %}</p>
+              </div>
+               {% endfor %}
             </div>
           </div>
-          <div class="product__info__size__container">
-            <button class="product__info__select__color" name="product__info__select__color" value="options">
-              барва
-            </button>
-            <div class="product__info__options__color">
-              <div class="product__info__option">
-                <div class="color"></div>
-                <p>чорний</p>
-              </div>
-              <div class="product__info__option">
-                <div class="color"></div>
-                <p>чорний</p>
-              </div>
-              <div class="product__info__option">
-                <div class="color"></div>
-                <p>чорний</p>
-              </div>
-              <div class="product__info__option">
-                <div class="color"></div>
-                <p>чорний</p>
-              </div>
-            </div>
-          </div>
+          {% endfor %}
         </div>
         <div class="product__quantity__container">
           <button id="addToCartBtn" class="product__addtocart__btn" @click="addBasket" :class="{ 'active': isBuyButtonActive}">
@@ -165,6 +151,8 @@
           basket: Alpine.$persist([]).as("basket"),
           buyButtonText:"У кошик",
           isBuyButtonActive: false,
+          activeSelect: [],
+          activeOption:{},
           product: {
             id: "{{ product.id }}",
             name: "{{ product.name }}",
@@ -203,6 +191,7 @@
             // Set default selected options
             Object.values(cheapestOptions).forEach(option => {
               this.product.activeOptions.push(option);
+              this.activeOption[`n${option.group_id}`] = option;
             });
 
             // Update total price
@@ -215,8 +204,10 @@
             );
 
             // Add the new option
-            this.product.activeOptions.push(this.options.find(item => item.id === option_id));
-
+            const option = this.options.find(item => item.id === option_id)
+            this.product.activeOptions.push(option);
+            this.activeOption[`n${option.group_id}`] = option;
+            this.activeSelect = this.activeSelect.filter(id=>id !== group_id)
             // Update total price
             this.updatePrice();
           },
@@ -260,8 +251,14 @@
               this.isBuyButtonActive = false;
             }, 2000);
           },
-          isOptionSelected(option_id) {
-            return this.product.activeOptions.some(activeOption => activeOption.id === option_id);
+          isOptionSelected(group_id) {
+            return this.activeSelect.some(id => id === group_id);
+          },
+          getShowColor(group_id) {
+            return !(this.activeOption[`n${group_id}`].color == "None");
+          },
+          addOptionSelect(group_id) {
+            this.activeSelect.push(group_id);
           },
         }));
       });

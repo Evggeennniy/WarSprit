@@ -239,7 +239,6 @@
           })
             .then((response) => response.json())
             .then((data) => {
-              console.log(data);
               this.summary.sumPriceNoDiscount = data.data.sumPriceNoDiscount;
               this.summary.sumDiscountProduct = data.data.sumDiscountProduct;
               this.summary.sumPrice = data.data.sumPrice;
