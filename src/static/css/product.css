@@ -299,8 +299,8 @@
   display: none;
 }
 
-.product__info__options__size.active,
-.product__info__options__color.active {
+.product__info__options__size.product__active,
+.product__info__options__color.product__active {
   display: block;
 }
 
