@@ -19,7 +19,7 @@
 
   <div class="container__inner container__main" x-data="Product">
     <p class="main__title">головна / товар</p>
-    <p class="main__title__mini">кошик</p>
+    <p class="main__title__mini">товар</p>
     <div class="product__content">
       <div class="product__images">
         <img src="{{ product.photo.url }}" class="thumbnail product__main__img" alt="">
@@ -52,26 +52,33 @@
         </div>
         <div class="dashed__line"></div>
         <div class="product__info__size">
-          {% regroup product.options.all|dictsort:"group.id" by group.id as grouped_options %}
-          {% for group in grouped_options %}
-          {% for option in group.list %}
-          <div class="product__info__size__container" :class="{ 'active':  isOptionSelected({{ option.id }}) }"  @click="toggleOption({{ group.grouper }},{{ option.id }})">
-              {% if option.color %}
-                  <div class="color" style="background-color: {{ option.get_color }}; width: 20px; height: 20px; display: inline-block;"></div>
-              {% endif %}
-
-            <p class="product__info__size__text" :class="{ 'active':  isOptionSelected({{ option.id }}) }">{{ option.value|safe }}
-              {% if option.additional_price %}
-                  - {{ option.additional_price }}₴
-              {% endif %}
-            </p>
+          <div class="product__info__size__container">
+            <button class="product__info__select__size" name="product__info__select__size" value="options">
+              розмір
+            </button>
+            <div class="product__info__options__size">
+              <p class="product__info__option">XL</p>
+              <p class="product__info__option">XS</p>
+              <p class="product__info__option">L</p>
+              <p class="product__info__option">S</p>
+            </div>
           </div>
-          {% endfor %}
-         {% endfor %}
+          <div class="product__info__size__container">
+            <button class="product__info__select__color" name="product__info__select__color" value="options">
+              барва
+            </button>
+            <div class="product__info__options__color">
+              <p class="product__info__option">чорний</p>
+              <p class="product__info__option">білий</p>
+              <p class="product__info__option">червоний</p>
+              <p class="product__info__option">зелений</p>
+            </div>
+          </div>
         </div>
         <div class="product__quantity__container">
-          <button class="product__addtocart__btn" @click="addBasket" :class="{ 'active': isBuyButtonActive}">
-            <img src="{% static 'icon/shopping-cart.png' %}" alt="">
+          <button id="addToCartBtn" class="product__addtocart__btn" @click="addBasket" :class="{ 'active': isBuyButtonActive}">
+            <img class="product__basket" src="{% static 'icon/basket.svg' %}" alt="">
+            <img class="product__basket__check" src="{% static 'icon/basket-check.png' %}" alt="">
             <p class="product__cart__text" x-text="buyButtonText"></p>
           </button>
           <div class="product__quantity__btns">
@@ -120,6 +127,27 @@
     </div>
 
     <script>
+
+      const addToCartBtn = document.getElementById('addToCartBtn');
+      const basketImg = addToCartBtn.querySelector('.product__basket');
+      const checkImg = addToCartBtn.querySelector('.product__basket__check');
+
+
+
+      addToCartBtn.addEventListener('click', function() {
+        // Проверяем ширину экрана
+        if (window.innerWidth <= 640) {
+          basketImg.style.display = 'none';
+          checkImg.style.display = 'block';
+
+          addToCartBtn.style.border = '1px solid transparent';
+          addToCartBtn.style.borderRadius = '6px';
+          addToCartBtn.style.background = 'linear-gradient(to right, #141F25,     #141F25), var(--clr-gradient)';
+          addToCartBtn.style.backgroundClip = 'padding-box, border-box';
+          addToCartBtn.style.backgroundOrigin = 'padding-box, border-box';
+        }
+      });
+
       document.addEventListener("alpine:init", () => {
         Alpine.data("Product", () => ({
           basket: Alpine.$persist([]).as("basket"),

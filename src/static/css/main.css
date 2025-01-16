@@ -27,6 +27,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 100%;
 }
 
 .navbar__catalog {
@@ -285,6 +286,7 @@
   background-clip: padding-box, border-box;
   background-origin: padding-box, border-box;
   display: flex;
+  align-items: center;
   justify-content: center;
   gap: 0.5rem;
   padding: 0.25rem 0.5rem;
@@ -303,8 +305,8 @@
   background-image: url("../img/bg-black.png");
   background-repeat: no-repeat;
   background-size: cover;
-  min-height: 12rem;
-  max-height: 12rem;
+  padding-top: 4rem;
+  padding-bottom: 4rem;
   display: flex;
   align-items: center;
   margin-top: 6rem;
@@ -348,12 +350,13 @@
 
 .footer {
   background-color: #323D43;
-  max-height: 10rem;
-  min-height: 10rem;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-top: 10rem;
+  padding-top: 3rem;
+  padding-bottom: 3rem;
 }
 
 .footer__container {
@@ -472,6 +475,8 @@
 
   .container__main__help {
     margin-top: 4rem;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
   }
 
   .hero__title {
@@ -519,7 +524,7 @@
     color: var(--clr-white);
     font-weight: 600;
     display: block;
-    font-size: 1.5rem;
+    font-size: 1.35rem;
   }
 
   .span {
@@ -540,6 +545,28 @@
 
 @media (max-width: 640px) {
 
+  .footer {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+
+  .footer__container {
+    gap: 1rem;
+  }
+
+  .footer__left__mini {
+    gap: 2.5rem;
+  }
+
+  .footer__rights {
+    font-size: 1rem;
+    font-weight: 300;
+  }
+
+  .container__header {
+    height: 4.5rem;
+  }
+
   .main__wrapper__cards {
     margin-top: -6rem;
   }
@@ -554,7 +581,7 @@
   }
 
   .main__help__title__mini {
-    font-size: 1.25rem;
+    font-size: 1.15rem;
   }
 
   .military__btn {
@@ -591,6 +618,15 @@
 }
 
 @media (max-width: 450px) {
+
+  .container__main__help {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+
+  .main__help__title__mini {
+    font-size: 1.05rem;
+  }
 
   .main__wrapper__cards {
     margin-top: -10rem;

@@ -46,8 +46,10 @@
           <div class="card__dashed__line"></div>
         </div>
       </div>
+    </div>
 
 {% for category in categories %}
+    <div class="container__inner">
       <div class="main__wrapper__tshirts" x-data="scrollCarousel" x-init="initialize">
         <div class="tshirts__upper">
           <p class="tshirts__upper__text">{{ category.name }}</p>
@@ -69,12 +71,11 @@
 
         </div>
       </div>
+      </div>
       {% if not forloop.last %}
       {% include 'elements/help.html' %}
       {% endif %}
     {% endfor %}
-
-      </div>
     </div>
 
  <script>
