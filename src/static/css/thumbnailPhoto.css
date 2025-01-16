@@ -44,5 +44,9 @@
 }
 
 .active {
-    background-color: red;
+    background:
+        var(--clr-gradient),
+        var(--clr-gradient);
+    background-clip: padding-box, border-box;
+    background-origin: padding-box, border-box;
 }

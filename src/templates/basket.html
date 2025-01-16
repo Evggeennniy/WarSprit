@@ -8,56 +8,50 @@
   <title>Кошик</title>
   <link rel="stylesheet" href="{% static 'css/index.css' %}">
   <link rel="stylesheet" href="{% static 'css/basket.css' %}">
-      <script
-      defer
-      src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js"
-    ></script>
-    <!-- Alpine Core -->
-    <script
-      defer
-      src="https://cdn.jsdelivr.net/npm/@alpinejs/mask@3.x.x/dist/cdn.min.js"
-    ></script>
-    <script
-      defer
-      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
-    ></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js"></script>
+  <!-- Alpine Core -->
+  <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/mask@3.x.x/dist/cdn.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 
 <body>
- {% include 'elements/header.html' %}
-  <div class="container__inner container__wrapper"  x-data="basketStore">
+  {% include 'elements/header.html' %}
+  <div class="container__inner container__wrapper" x-data="basketStore">
     <div class="container__cart">
       <p class="cart__text">головна / кошик</p>
       <div class="cart__content">
         <div class="cart__cards">
           <template class="cart__template" x-for="(item, index) in items" :key="item.itemID">
-            <div class="cart__card"  @click.stop="window.location.href = '/product/' + item.id">
-            <div class="cart__img__container">
-              <img class="cart__img" :src="item.photo" alt="">
+            <div class="cart__card__container">
+              <div class="cart__card" @click.stop="window.location.href = '/product/' + item.id">
+                <div class="cart__img__container">
+                  <img class="cart__img" :src="item.photo" alt="">
 
-            </div>
-            <div class="card__info">
-              <p class="card__name" x-text="item.name"></p>
-              <div class="card__size__color">
-                <template x-for="(option, index) in item.activeOptions" :key="option.group_id">
-                  <p class="card__size"><span x-text="option.group_name"></span>: <span class="card__span" x-html="option.value"></span></p>
-               </template>
-              </div>
-              <div class="card__price__quantity">
-                <p class="card__price"><span x-text="item.price*item.productQuantity"></span>₴</p>
-                <div class="card__quantity__container">
-                  <button class="quantity__btn" @click.stop="editQuantity(index, 'minus', item.itemID)">
-                    <img src="{% static 'icon/minus.png' %}" alt="">
-                  </button>
-                  <p class="card__quantity"  x-text="item.productQuantity"></p>
-                  <button class="quantity__btn" @click.stop="editQuantity(index, 'plus', item.itemID)">
-                    <img src="{% static 'icon/plus.png' %}" alt="">
-                  </button>
+                </div>
+                <div class="card__info">
+                  <p class="card__name" x-text="item.name"></p>
+                  <div class="card__size__color">
+                    <template x-for="(option, index) in item.activeOptions" :key="option.group_id">
+                      <p class="card__size"><span x-text="option.group_name"></span>: <span class="card__span"
+                          x-html="option.value"></span></p>
+                    </template>
+                  </div>
+                  <div class="card__price__quantity">
+                    <p class="card__price"><span x-text="item.price*item.productQuantity"></span>₴</p>
+                    <div class="card__quantity__container">
+                      <button class="quantity__btn" @click.stop="editQuantity(index, 'minus', item.itemID)">
+                        <img src="{% static 'icon/minus.png' %}" alt="">
+                      </button>
+                      <p class="card__quantity" x-text="item.productQuantity"></p>
+                      <button class="quantity__btn" @click.stop="editQuantity(index, 'plus', item.itemID)">
+                        <img src="{% static 'icon/plus.png' %}" alt="">
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
+              <div class="dashed__line__product"></div>
             </div>
-            </div>
-            <div class="dashed__line__product"></div>
           </template>
         </div>
         <div class="break__line__vr"></div>
@@ -101,14 +95,19 @@
           <div class="contact__inputs">
             <input placeholder="ПІБ" class="contact__input contact__name" type="text" x-model="order.pib">
             <div class="contact__inputs__mid">
-              <input placeholder="Номер телефону" class="contact__input contact__phonenumber" type="text" x-model="order.phone" x-mask="-99 99 99 99 999">
-              <input placeholder="Місто" class="contact__input contact__city__mini" type="text"  x-model="order.city">
-              <input placeholder="№ відділення" class="contact__input contact__branch__number" type="text" x-model="order.postOfficeId">
+              <input placeholder="Номер телефону" class="contact__input contact__phonenumber" type="text"
+                x-model="order.phone" x-mask="-99 99 99 99 999">
+              <input placeholder="Місто" class="contact__input contact__city__mini" type="text" x-model="order.city">
+              <input placeholder="№ відділення" class="contact__input contact__branch__number" type="text"
+                x-model="order.postOfficeId">
             </div>
             <div class="contact__inputs__footer">
-              <input placeholder="Виберіть пошту" class="contact__input contact__mail" type="text" x-model="order.postOffice">
-              <input placeholder="Пошта" class="contact__input contact__mail__mini" type="text"  x-model="order.postOffice">
-              <input placeholder="№ відділення" class="contact__input contact__branch__number__mini" type="text" x-model="order.postOfficeId">
+              <input placeholder="Виберіть пошту" class="contact__input contact__mail" type="text"
+                x-model="order.postOffice">
+              <input placeholder="Пошта" class="contact__input contact__mail__mini" type="text"
+                x-model="order.postOffice">
+              <input placeholder="№ відділення" class="contact__input contact__branch__number__mini" type="text"
+                x-model="order.postOfficeId">
               <input placeholder="Місто" class="contact__input contact__city" type="text" x-model="order.city">
             </div>
           </div>
@@ -117,180 +116,180 @@
       </div>
     </div>
   </div>
-    <script>
-      document.addEventListener("alpine:init", () => {
-        Alpine.data("basketStore", () => ({
-          items: Alpine.$persist([]).as("basket"),
-          summary: {
-            sumPriceNoDiscount: 0,
-            sumDiscountProduct: 0,
-            sumPrice: 0,
-          },
-          isDisabledOrder: false,
-          order: {
-            pib: Alpine.$persist("").as("pib"),
-            phone: Alpine.$persist("").as("phone"),
-            postOfficeId: Alpine.$persist("").as("postOfficeId"),
-            city: Alpine.$persist("").as("city"),
-            postOffice: Alpine.$persist("").as("postOffice"),
-          },
-          init() {
-            if (!this.order.phone) {
-              this.order.phone = "+380";
-            }
+  <script>
+    document.addEventListener("alpine:init", () => {
+      Alpine.data("basketStore", () => ({
+        items: Alpine.$persist([]).as("basket"),
+        summary: {
+          sumPriceNoDiscount: 0,
+          sumDiscountProduct: 0,
+          sumPrice: 0,
+        },
+        isDisabledOrder: false,
+        order: {
+          pib: Alpine.$persist("").as("pib"),
+          phone: Alpine.$persist("").as("phone"),
+          postOfficeId: Alpine.$persist("").as("postOfficeId"),
+          city: Alpine.$persist("").as("city"),
+          postOffice: Alpine.$persist("").as("postOffice"),
+        },
+        init() {
+          if (!this.order.phone) {
+            this.order.phone = "+380";
+          }
+          this.updateBasket();
+          this.$watch("items", () => {
             this.updateBasket();
-            this.$watch("items", () => {
-              this.updateBasket();
-            });
-          },
-          editQuantity(itemIndex, action, temId) {
-            if (itemIndex !== -1) {
-              if (action === "plus") {
-                this.items[itemIndex].productQuantity++;
-              } else if (
-                action === "minus" &&
-                this.items[itemIndex].productQuantity > 1
-              ) {
-                this.items[itemIndex].productQuantity--;
-              } else if (
-                action === "minus" &&
-                this.items[itemIndex].productQuantity === 1
-              ) {
-                this.items[itemIndex].productQuantity--;
-                this.removeItem(temId);
-              }
-            }
-          },
-          removeItem(id) {
-            this.items = this.items.filter((item) => item.itemID !== id);
-          },
-          validateOrder() {
-            const arrayMessage = [];
-            if (this.order.pib.trim() === "") {
-              arrayMessage.push('ПІБ замовника є обов\'язковим;');
-            }
-            if (
-              this.order.phone.trim() === "" ||
-              this.order.phone.trim() === "+"
+          });
+        },
+        editQuantity(itemIndex, action, temId) {
+          if (itemIndex !== -1) {
+            if (action === "plus") {
+              this.items[itemIndex].productQuantity++;
+            } else if (
+              action === "minus" &&
+              this.items[itemIndex].productQuantity > 1
             ) {
-              arrayMessage.push(
-                "Номер телефона замовника є обов\'язковим;"
-              );
+              this.items[itemIndex].productQuantity--;
+            } else if (
+              action === "minus" &&
+              this.items[itemIndex].productQuantity === 1
+            ) {
+              this.items[itemIndex].productQuantity--;
+              this.removeItem(temId);
             }
-            if (this.order.city.trim() === "") {
-              arrayMessage.push("Місто є обов\'язковим;");
-            }
-            if (this.order.postOfficeId.trim() === "") {
-              arrayMessage.push(
-                "Відділення пошти є обов\'язковим;"
-              );
-            }
-            if (this.order.postOffice.trim() === "") {
-              arrayMessage.push(
-                "Спосіб доставки є обов\'язковим;"
-              );
-            }
-            if (this.summary.sumPrice === 0) {
-              arrayMessage.push("Кошик порожній ( ;");
-            }
-            return arrayMessage.join("\n");
-          },
-          formatedBody() {
-            return this.items.map((item) => {
-              return {
-                options: this.formatedOption(item.activeOptions),
-                productId: item.id,
-                productQuantity: item.productQuantity,
-              };
-            });
-          },
-          formatedOption(options) {
-            return options.map((option) => {
-              return option.id
-            });
-          },
-          getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== "") {
-              const cookies = document.cookie.split(";");
-              for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === name + "=") {
-                  cookieValue = decodeURIComponent(
-                    cookie.substring(name.length + 1)
-                  );
-                  break;
-                }
+          }
+        },
+        removeItem(id) {
+          this.items = this.items.filter((item) => item.itemID !== id);
+        },
+        validateOrder() {
+          const arrayMessage = [];
+          if (this.order.pib.trim() === "") {
+            arrayMessage.push('ПІБ замовника є обов\'язковим;');
+          }
+          if (
+            this.order.phone.trim() === "" ||
+            this.order.phone.trim() === "+"
+          ) {
+            arrayMessage.push(
+              "Номер телефона замовника є обов\'язковим;"
+            );
+          }
+          if (this.order.city.trim() === "") {
+            arrayMessage.push("Місто є обов\'язковим;");
+          }
+          if (this.order.postOfficeId.trim() === "") {
+            arrayMessage.push(
+              "Відділення пошти є обов\'язковим;"
+            );
+          }
+          if (this.order.postOffice.trim() === "") {
+            arrayMessage.push(
+              "Спосіб доставки є обов\'язковим;"
+            );
+          }
+          if (this.summary.sumPrice === 0) {
+            arrayMessage.push("Кошик порожній ( ;");
+          }
+          return arrayMessage.join("\n");
+        },
+        formatedBody() {
+          return this.items.map((item) => {
+            return {
+              options: this.formatedOption(item.activeOptions),
+              productId: item.id,
+              productQuantity: item.productQuantity,
+            };
+          });
+        },
+        formatedOption(options) {
+          return options.map((option) => {
+            return option.id
+          });
+        },
+        getCookie(name) {
+          let cookieValue = null;
+          if (document.cookie && document.cookie !== "") {
+            const cookies = document.cookie.split(";");
+            for (let i = 0; i < cookies.length; i++) {
+              const cookie = cookies[i].trim();
+              if (cookie.substring(0, name.length + 1) === name + "=") {
+                cookieValue = decodeURIComponent(
+                  cookie.substring(name.length + 1)
+                );
+                break;
               }
             }
-            return cookieValue;
-          },
-          updateBasket() {
-            const body = {
-              order_list: this.formatedBody(),
-            };
-            const csrftoken = this.getCookie("csrftoken");
-            fetch("/basket/", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": csrftoken,
-              },
-              body: JSON.stringify(body),
+          }
+          return cookieValue;
+        },
+        updateBasket() {
+          const body = {
+            order_list: this.formatedBody(),
+          };
+          const csrftoken = this.getCookie("csrftoken");
+          fetch("/basket/", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": csrftoken,
+            },
+            body: JSON.stringify(body),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              console.log(data);
+              this.summary.sumPriceNoDiscount = data.data.sumPriceNoDiscount;
+              this.summary.sumDiscountProduct = data.data.sumDiscountProduct;
+              this.summary.sumPrice = data.data.sumPrice;
             })
-              .then((response) => response.json())
-              .then((data) => {
-                console.log(data);
-                this.summary.sumPriceNoDiscount = data.data.sumPriceNoDiscount;
-                this.summary.sumDiscountProduct = data.data.sumDiscountProduct;
-                this.summary.sumPrice = data.data.sumPrice;
-              })
-              .catch((error) => {
-                console.error("Error sending basket:", error);
-              });
-          },
-          sendOrder() {
-            this.isDisabledOrder=true;
-            const errMess = this.validateOrder();
-            if (errMess) {
-              alert(errMess);
-              return;
-            }
-            const body = {
-              order_list: this.formatedBody(),
-              ...this.order,
-            };
-            const csrftoken = this.getCookie("csrftoken");
-            fetch("/submit-order/", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": csrftoken,
-              },
-              body: JSON.stringify(body),
+            .catch((error) => {
+              console.error("Error sending basket:", error);
+            });
+        },
+        sendOrder() {
+          this.isDisabledOrder = true;
+          const errMess = this.validateOrder();
+          if (errMess) {
+            alert(errMess);
+            return;
+          }
+          const body = {
+            order_list: this.formatedBody(),
+            ...this.order,
+          };
+          const csrftoken = this.getCookie("csrftoken");
+          fetch("/submit-order/", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": csrftoken,
+            },
+            body: JSON.stringify(body),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              this.isDisabledOrder = false;
+              const modalCloseBtn = document.getElementById("contact-form-close-btn");
+              this.items = [];
+              alert("Дякуємо за замовлення !!")
+              window.location.href = "{% url 'index' %}";
             })
-              .then((response) => response.json())
-              .then((data) => {
-                this.isDisabledOrder=false;
-                const modalCloseBtn = document.getElementById("contact-form-close-btn");
-                this.items = [];
-                alert("Дякуємо за замовлення !!")
-                window.location.href = "{% url 'index' %}";
-              })
-              .catch((error) => {
-                this.isDisabledOrder=false;
-                console.error("Error sending basket:", error);
-              });
-          },
-        }));
-      });
-    </script>
-    <script>
+            .catch((error) => {
+              this.isDisabledOrder = false;
+              console.error("Error sending basket:", error);
+            });
+        },
+      }));
+    });
+  </script>
+  <script>
     let isOpen = false;  // Изначально окно закрыто
     const openBtn = document.getElementById("checkout-order-btn");
     const modalWindow = document.getElementById("container-contact");
     const modalCloseBtn = document.getElementById("contact-form-close-btn");
-  
+
     function openModal() {
       if (!isOpen) {
         modalWindow.style.display = "flex";
@@ -302,9 +301,9 @@
       modalWindow.style.display = "none";
       isOpen = false;
     }
-  
+
     openBtn.addEventListener("click", openModal);
-  
+
     modalCloseBtn.addEventListener("click", closeModal);
   </script>
 
