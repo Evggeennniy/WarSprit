@@ -55,7 +55,7 @@
           {% regroup product.options.all|dictsort:"group.id" by group.id as grouped_options %}
           {% for group in grouped_options %}
           <div class="product__info__size__container">
-            <button class="product__info__select__color" name="product__info__select__color" value="options" @click.stop="addOptionSelect({{ group.grouper }})" >
+            <button class="product__info__select__color" name="product__info__select__color" value="options" @click.stop="toggleSelect({{ group.grouper }})" >
                <span class="card__span" x-html="activeOption.n{{ group.grouper }}.value"></span>
                 <span x-show="activeOption.n{{ group.grouper }}.additional_price" x-text="activeOption.n{{ group.grouper }}.additional_price"></span>
               <div class="color" x-show="getShowColor({{ group.grouper }})" :style="{ 'background-color': activeOption.n{{ group.grouper }}.color }" ></div>
@@ -207,6 +207,7 @@
             const option = this.options.find(item => item.id === option_id)
             this.product.activeOptions.push(option);
             this.activeOption[`n${option.group_id}`] = option;
+            //видалити
             this.activeSelect = this.activeSelect.filter(id=>id !== group_id)
             // Update total price
             this.updatePrice();
@@ -257,8 +258,12 @@
           getShowColor(group_id) {
             return !(this.activeOption[`n${group_id}`].color == "None");
           },
-          addOptionSelect(group_id) {
-            this.activeSelect.push(group_id);
+          toggleSelect(group_id) {
+            if (this.isOptionSelected(group_id)){
+              this.activeSelect = this.activeSelect.filter(id=>id !== group_id)
+            }else{
+              this.activeSelect.push(group_id);
+            }
           },
         }));
       });
