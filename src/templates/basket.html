@@ -58,7 +58,7 @@
               <p class="basket__empty__text">Кошик порожній</p>
               <button class="basket__empty__button">
                 <img src="{% static 'icon/basket.svg' %}" alt="">
-                <p class="basket__goto__catalog">До товару</p>
+                <a class="basket__goto__catalog"  href="{% url 'index' %}">До товару</a>
               </button>
             </div>
           </div>
