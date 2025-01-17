@@ -36,7 +36,7 @@ class CategoriesAdmin(admin.ModelAdmin):
     ]
 
 
-class ProductProductOption(admin.TabularInline):
+class ProductProductOption(admin.StackedInline):
     model = ProductOption
     extra = 0
 
