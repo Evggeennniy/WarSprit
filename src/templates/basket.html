@@ -27,7 +27,6 @@
               <div class="cart__card" @click.stop="window.location.href = '/product/' + item.id">
                 <div class="cart__img__container">
                   <img class="cart__img" :src="item.photo" alt="">
-
                 </div>
                 <div class="card__info">
                   <p class="card__name" x-text="item.name"></p>
@@ -54,7 +53,15 @@
               <div class="dashed__line__product"></div>
             </div>
           </template>
-          <div x-show="!items.length" >Кошик пустий</div>
+          <div class="basket__empty__container" x-show="!items.length">
+            <div class="basket__empty__wrapper">
+              <p class="basket__empty__text">Кошик порожній</p>
+              <button class="basket__empty__button">
+                <img src="{% static 'icon/basket.svg' %}" alt="">
+                <p class="basket__goto__catalog">До товару</p>
+              </button>
+            </div>
+          </div>
         </div>
         <div x-show="items.length" class="break__line__vr"></div>
         <div x-show="items.length" class="break__line__hr"></div>
