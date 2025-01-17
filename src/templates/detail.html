@@ -56,9 +56,11 @@
           {% for group in grouped_options %}
           <div class="product__info__size__container">
             <button class="product__info__select__color" name="product__info__select__color" value="options" @click.stop="toggleSelect({{ group.grouper }})" >
-               <span class="card__span" x-html="activeOption.n{{ group.grouper }}.value"></span>
-                <span x-show="activeOption.n{{ group.grouper }}.additional_price" x-text="activeOption.n{{ group.grouper }}.additional_price"></span>
               <div class="color" x-show="getShowColor({{ group.grouper }})" :style="{ 'background-color': activeOption.n{{ group.grouper }}.color }" ></div>
+              <div class="product__info__select__info">
+                <span class="card__span" x-html="activeOption.n{{ group.grouper }}.value"></span>
+                <span x-show="activeOption.n{{ group.grouper }}.additional_price" x-text="activeOption.n{{ group.grouper }}.additional_price"></span>
+              </div>
             </button>
             <div class="product__info__options__color" :class="{ 'product__active': isOptionSelected({{ group.grouper }})}">
               {% for option in group.list %}
@@ -133,7 +135,6 @@
 
 
       addToCartBtn.addEventListener('click', function() {
-        // Проверяем ширину экрана
         if (window.innerWidth <= 640) {
           basketImg.style.display = 'none';
           checkImg.style.display = 'block';
