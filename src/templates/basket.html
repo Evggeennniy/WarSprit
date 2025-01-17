@@ -54,10 +54,11 @@
               <div class="dashed__line__product"></div>
             </div>
           </template>
+          <div x-show="!items.length" >Кошик пустий</div>
         </div>
-        <div class="break__line__vr"></div>
-        <div class="break__line__hr"></div>
-        <div class="cart__checkout">
+        <div x-show="items.length" class="break__line__vr"></div>
+        <div x-show="items.length" class="break__line__hr"></div>
+        <div x-show="items.length" class="cart__checkout">
           <p class="checkout__title">сума замовлення</p>
           <div class="break__line__checkout"></div>
           <div class="price__count">
