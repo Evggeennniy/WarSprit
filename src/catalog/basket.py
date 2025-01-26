@@ -7,29 +7,33 @@ def calculate_total_price(product_data):
     products = Product.objects.all()
     total_price = 0
     DISCOUNT = 0
+    no_active_product = []
 
-    print(product_data)
     for product_info in product_data:
-        product_id = product_info["productId"]
-        product_quantity = product_info["productQuantity"]
-        options = product_info["options"]
+        try:
+            product_id = product_info["productId"]
+            product_quantity = product_info["productQuantity"]
+            options = product_info["options"]
 
-        print(options)
-        # Отримуємо продукт
-        product = products.get(id=product_id)
+            print(options)
+            # Отримуємо продукт
+            product = products.get(id=product_id)
 
-        if product:
-            # Базова ціна товару
-            base_price = product.price
+            if product:
+                # Базова ціна товару
+                base_price = product.price
 
-            # Додаткова вартість опцій
-            additional_price = sum(
-                ProductOption.objects.get(id=option).additional_price
-                for option in options
-            )
+                # Додаткова вартість опцій
+                additional_price = sum(
+                    ProductOption.objects.get(id=option).additional_price
+                    for option in options
+                )
 
-            # Загальна ціна для поточного товару
-            total_price += (base_price + additional_price) * product_quantity
+                # Загальна ціна для поточного товару
+                total_price += (base_price + additional_price) * product_quantity
+        except Product.DoesNotExist:
+            no_active_product.append(product_info["productId"])
+            print(no_active_product)
 
 
     if total_price != 0:
@@ -47,6 +51,7 @@ def calculate_total_price(product_data):
     return {
         "sumPrice": sumPrice,
         "sumPriceNoDiscount": total_price,
-        "sumDiscountProduct": - DISCOUNT
+        "sumDiscountProduct": - DISCOUNT,
+        "deleteProductNoActive": no_active_product
     }
 
