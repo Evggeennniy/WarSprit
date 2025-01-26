@@ -147,7 +147,9 @@
           }
           this.updateBasket();
           this.$watch("items", () => {
-            this.updateBasket();
+            if (this.items.length){
+             this.updateBasket();
+            }
           });
         },
         editQuantity(itemIndex, action, temId) {
@@ -247,8 +249,10 @@
           })
             .then((response) => response.json())
             .then((data) => {
-               if (data.data.deleteProductNoActive) {
-                this.items = [];
+               if (data.data.deleteProductNoActive.length) {
+                   const idsToRemove = new Set(data.data.deleteProductNoActive);
+                   // Фільтруємо items за один прохід
+                   this.items = this.items.filter((item) => !idsToRemove.has(item.itemID));
               }else{
                 this.summary.sumPriceNoDiscount = data.data.sumPriceNoDiscount;
                 this.summary.sumDiscountProduct = data.data.sumDiscountProduct;
