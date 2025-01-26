@@ -250,9 +250,7 @@
             .then((response) => response.json())
             .then((data) => {
                if (data.data.deleteProductNoActive.length) {
-                   const idsToRemove = new Set(data.data.deleteProductNoActive);
-                   // Фільтруємо items за один прохід
-                   this.items = this.items.filter((item) => !idsToRemove.has(item.itemID));
+                   this.items = [];
               }else{
                 this.summary.sumPriceNoDiscount = data.data.sumPriceNoDiscount;
                 this.summary.sumDiscountProduct = data.data.sumDiscountProduct;
