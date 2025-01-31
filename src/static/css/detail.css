@@ -117,7 +117,7 @@
 }
 
 .product__images {
-  flex: 2;
+  flex: 1.5;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -141,7 +141,8 @@
 
 .product__main__img {
   width: 100%;
-  aspect-ratio: 15 / 13;
+  aspect-ratio: 4 / 4.25;
+  object-fit: cover;
 }
 
 .product__info {
