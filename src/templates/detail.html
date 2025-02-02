@@ -78,7 +78,7 @@
         </div>
         <div class="product__quantity__container">
           <button id="addToCartBtn" class="product__addtocart__btn" @click="addBasket" :class="{ 'active': isBuyButtonActive}">
-            <img class="product__basket" src="{% static 'icon/basket.svg' %}" alt="">
+            <img class="product__basket" src="{% static 'icon/cart.svg' %}" alt="">
             <img class="product__basket__check" src="{% static 'icon/basket-check.png' %}" alt="">
             <p class="product__cart__text" x-text="buyButtonText"></p>
           </button>
@@ -94,8 +94,8 @@
         </div>
         <div class="product__more__container">
           <a target="_blank" class="product__more__link" href="https://www.instagram.com/warrior_spir1t/profilecard/?igsh=YWV4dTl2MHdzY28w">
-            <p class="product__more__about">Детальніше о товару</p>
-            <img src="{% static 'icon/inst.svg' %}" alt="">
+            <p class="product__more__about">Детальніше про товар</p>
+            <img src="{% static 'icon/instagram.svg' %}" alt="">
           </a>
         </div>
       </div>
