@@ -216,4 +216,4 @@ CKEDITOR_5_CONFIGS = {
 }
 
 
-DISCOUNT = 150
+DISCOUNT = int(os.getenv('DISCOUNT',0))
