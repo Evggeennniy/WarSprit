@@ -1,12 +1,12 @@
 import os
-
+from django.conf import settings
 from .models import ProductOption, Product
 
 
 def calculate_total_price(product_data):
     products = Product.objects.all()
     total_price = 0
-    DISCOUNT = 0
+    DISCOUNT = settings.DISCOUNT
     no_active_product = []
 
     for product_info in product_data:
@@ -35,11 +35,6 @@ def calculate_total_price(product_data):
             no_active_product.append(product_info["productId"])
             print(no_active_product)
 
-
-    if total_price != 0:
-        DISCOUNT = os.getenv("DISCOUNT")
-        if DISCOUNT:
-            DISCOUNT = 150
 
     sumPrice = total_price - DISCOUNT
 
