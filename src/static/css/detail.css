@@ -124,6 +124,10 @@
   height: 100%;
 }
 
+.product__images img {
+  cursor: pointer;
+}
+
 .product__showcase {
   display: flex;
   flex-direction: row;

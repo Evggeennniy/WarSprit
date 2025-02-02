@@ -73,7 +73,7 @@
               <p class="grey__text">Ціна без знижки</p>
               <p class="cost__without__dc"><span x-text="summary.sumPriceNoDiscount"></span>₴</p>
             </div>
-            <div class="total__dc">
+            <div class="total__dc" x-show="summary.sumDiscountProduct">
               <p class="grey__text">Загальна знижка</p>
               <p class="total__dc__amount"><span x-text="summary.sumDiscountProduct"></span>₴</p>
             </div>
