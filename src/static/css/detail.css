@@ -136,11 +136,19 @@
   overflow: scroll;
 }
 
-.product__showcase img {
+.product__showcase__img {
   min-width: 83px;
   max-width: 83px;
   max-height: 83px;
   min-height: 83px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.product__showcase__img img {
+  object-fit: contain;
 }
 
 .product__main__img {

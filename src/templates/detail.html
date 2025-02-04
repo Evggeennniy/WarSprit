@@ -26,7 +26,9 @@
         <img src="{{ product.photo.url }}" class="thumbnail product__main__img" alt="">
         <div class="product__showcase">
           {% for image in product.images.all %}
-          <img src="{{ image.image.url }}" class="thumbnail" alt="">
+          <div class="product__showcase__img">
+            <img src="{{ image.image.url }}" class="thumbnail" alt="">
+          </div>
           {% endfor %}
         </div>
       </div>
