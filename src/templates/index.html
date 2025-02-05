@@ -15,7 +15,7 @@
 
 <body>
 
-{% include 'elements/header.html' %}
+  {% include 'elements/header.html' %}
 
   <div class="container__hero">
     <div class="hero__container">
@@ -49,7 +49,7 @@
       </div>
     </div>
 
-{% for category in categories %}
+    {% for category in categories %}
     <div class="container__inner">
       <div class="main__wrapper__tshirts" x-data="scrollCarousel" x-init="initialize">
         <div class="tshirts__upper">
@@ -64,50 +64,58 @@
             </button>
           </div>
         </div>
-        <div x-ref="carousel" class="tshirts__cards carousel" >
+        <div x-ref="carousel" class="tshirts__cards carousel">
 
-      {% for product in category.products.all|dictsort:"view_count" %}
-        {% include 'elements/product.html' %}
-      {% endfor %}
+          {% for product in category.products.all|dictsort:"view_count" %}
+          {% include 'elements/product.html' %}
+          {% endfor %}
 
         </div>
       </div>
-      </div>
-      {% if not forloop.last %}
-      {% include 'elements/help.html' %}
-      {% endif %}
-    {% endfor %}
     </div>
+    {% if not forloop.last %}
+    {% include 'elements/help.html' %}
+    {% endif %}
+    {% endfor %}
+  </div>
 
- <script>
-        document.addEventListener('alpine:init', () => {
-            Alpine.data('scrollCarousel', () => ({
-                currentIndex: 0,
-                itemWidth: 0,
-                initialize() {
-                    this.itemWidth = this.$refs.carousel.children[0].offsetWidth;
+  <script>
+    document.addEventListener('alpine:init', () => {
+      Alpine.data('scrollCarousel', () => ({
+        currentIndex: 0,
+        itemWidth: 0,
+        maxIndex: 0,
+        initialize() {
+          this.calculateItemWidth();
+          window.addEventListener('resize', this.calculateItemWidth.bind(this));
+        },
+        calculateItemWidth() {
+          if (this.$refs.carousel.children.length > 0) {
+            const firstItem = this.$refs.carousel.children[0];
+            const style = window.getComputedStyle(firstItem);
+            const margin = parseFloat(style.marginLeft) + parseFloat(style.marginRight);
+            this.itemWidth = firstItem.offsetWidth + margin;
 
-                    window.addEventListener('resize', () => {
-                        this.itemWidth = this.$refs.carousel.children[0].offsetWidth;
-                    });
-                },
-                scroll(direction) {
-                    this.currentIndex += direction;
+            const totalWidth = this.$refs.carousel.scrollWidth;
+            const visibleWidth = this.$refs.carousel.offsetWidth;
 
-                    const maxIndex = this.$refs.carousel.children.length - Math.floor(this.$refs.carousel.offsetWidth / this.itemWidth);
-                    this.currentIndex = Math.max(0, Math.min(this.currentIndex, maxIndex));
-                    console.log(this.$refs.carousel.offsetWidth);
-                    console.log(this.itemWidth);
-                    this.$refs.carousel.scrollTo({
-                        left: this.currentIndex * this.itemWidth,
-                        behavior: 'smooth',
-                    });
-                },
-            }));
-        });
-    </script>
+            this.maxIndex = Math.ceil((totalWidth - visibleWidth) / this.itemWidth);
+          }
+        },
+        scroll(direction) {
+          this.currentIndex += direction;
+          this.currentIndex = Math.max(0, Math.min(this.currentIndex, this.maxIndex));
 
-{% include 'elements/footer.html' %}
+          this.$refs.carousel.scrollTo({
+            left: this.currentIndex * this.itemWidth,
+            behavior: 'smooth',
+          });
+        },
+      }));
+    });
+  </script>
+
+  {% include 'elements/footer.html' %}
 </body>
 
 </html>
